@@ -45,4 +45,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hexTileTypes: {fileID: 11400000, guid: 2773c7768717a934ca5c12cd97897adb, type: 2}
-  tileType: 0

@@ -1,24 +1,29 @@
+using System.Collections.Generic;
+using UnityEditor.UIElements;
 using UnityEngine;
 
 [ExecuteInEditMode]
 public class HexTileSettings : MonoBehaviour
 {
+    public HexTileTypes HexTileTypes { get { return hexTileTypes; } }
     [SerializeField] private HexTileTypes hexTileTypes;
-    [SerializeField] private HexTileTypes.TileType tileType;
-    private HexTileTypes.TileType previousTileType;
     private bool hasSpawned = true;
+
+    public int SelectedTileTypeIndex { get { return selectedTileTypeIndex; } set { selectedTileTypeIndex = value; } }
+    private int selectedTileTypeIndex;
+    private int previousTileTypeIndex;
 
     private void Update()
     {
-        if (previousTileType == tileType || hasSpawned) return;
+        if (previousTileTypeIndex == selectedTileTypeIndex || hasSpawned) return;
         UpdateTileType();
-        previousTileType = tileType;
+        previousTileTypeIndex = selectedTileTypeIndex;
     }
 
-    public void SetTileType(HexTileTypes.TileType newTileType) 
-    { 
-        tileType = newTileType;
-        previousTileType = tileType;
+    public void SetTileType(int genSelectedTileTypeIndex) 
+    {
+        selectedTileTypeIndex = genSelectedTileTypeIndex;
+        previousTileTypeIndex = selectedTileTypeIndex;
         hasSpawned = false;
     }
 
@@ -26,7 +31,8 @@ public class HexTileSettings : MonoBehaviour
     {
         if (transform.childCount != 0) DestroyImmediate(transform.GetChild(0).gameObject);
         Vector3 worldPosition = gameObject.transform.TransformPoint(Vector3.zero);
-        GameObject hex = Instantiate(hexTileTypes.GetTileType(tileType), worldPosition, Quaternion.identity, transform);
-        hex.name = tileType.ToString();
+        Tile selectedTile = hexTileTypes.TileTypes[selectedTileTypeIndex];
+        GameObject hex = Instantiate(selectedTile.TilePrefab, worldPosition, Quaternion.identity, transform);
+        hex.name = selectedTile.TileName;
     }
 }

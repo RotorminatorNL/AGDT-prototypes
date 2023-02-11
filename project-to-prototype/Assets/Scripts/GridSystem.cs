@@ -5,19 +5,18 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class GridSystem : MonoBehaviour
 {
+    public HexTileTypes HexTileTypes { get { return hexTileTypes; } }
+
+    [Header("Grid tile types")]
     [SerializeField] private HexTileTypes hexTileTypes;
-    public List<TileChance> tileChances = new List<TileChance>();
 
-    [SerializeField] private float hexHeightOffset;
-    [SerializeField] private int gridHeight;
-    [SerializeField] private int gridWidth;
-    [SerializeField] private float gridWidthOffset;
+    [Header("Grid size")]
+    [SerializeField] private int gridHeight = 10;
+    [SerializeField] private int gridWidth = 10;
 
-    private void Start()
-    {
-        GenerateHexGrid();
-        //tileChances.Add(new TileChance());
-    }
+    [Header("Grid gen options")]
+    [SerializeField] private float hexHeightOffset = 0.75f;
+    [SerializeField] private float gridOddOffset = 0.5f;
 
     public void ClearHexGrid()
     {
@@ -41,9 +40,11 @@ public class GridSystem : MonoBehaviour
 
     private void GenerateHexTile(int xPos, int zPos)
     {
-        GameObject hexPrefab = hexTileTypes.GetTileType(0);
+        if (hexTileTypes == null) return;
+        GameObject hexPrefab = hexTileTypes.TileTypes[0].TilePrefab;
         GameObject hex = Instantiate(hexPrefab, new Vector3(0, 0, 0), Quaternion.identity, transform);
-        hex.GetComponent<HexTileSettings>().SetTileType((HexTileTypes.TileType)Random.Range(1, 3));
+
+        hex.GetComponent<HexTileSettings>().SetTileType(Random.Range(1,3));
         hex.GetComponent<HexTileSettings>().UpdateTileType();
 
         float hexWidth = hex.transform.GetChild(0).GetComponent<Renderer>().bounds.size.x;
@@ -52,7 +53,7 @@ public class GridSystem : MonoBehaviour
         float x = xPos * hexWidth;
         float z = zPos * hexHeight * hexHeightOffset;
 
-        if (zPos % 2 == 1) x += hexWidth * gridWidthOffset;
+        if (zPos % 2 == 1) x += hexWidth * gridOddOffset;
 
         hex.transform.position = new Vector3(x, 0, z);
         hex.name = $"Hex {xPos},{zPos}";
