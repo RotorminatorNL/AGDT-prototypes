@@ -6,6 +6,8 @@ using UnityEngine;
 public class GridSystem : MonoBehaviour
 {
     [SerializeField] private HexTileTypes hexTileTypes;
+    public List<TileChance> tileChances = new List<TileChance>();
+
     [SerializeField] private float hexHeightOffset;
     [SerializeField] private int gridHeight;
     [SerializeField] private int gridWidth;
@@ -14,6 +16,7 @@ public class GridSystem : MonoBehaviour
     private void Start()
     {
         GenerateHexGrid();
+        //tileChances.Add(new TileChance());
     }
 
     public void ClearHexGrid()
