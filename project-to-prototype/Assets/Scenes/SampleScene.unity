@@ -148,7 +148,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 585150343}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.9962568, y: 0.85, z: -9.231323}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -167,10 +167,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6886d7534a02d264099883fc4a911d4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  allTiles: []
   hexTileTypes: {fileID: 11400000, guid: 2773c7768717a934ca5c12cd97897adb, type: 2}
-  gridHeight: 3
-  gridWidth: 3
+  Tiles:
+  - TileName: Standard
+    TileChance: 0
+  - TileName: Grass
+    TileChance: 1
+  - TileName: Water
+    TileChance: 0.174
+  gridHeight: 20
+  gridWidth: 20
   hexHeightOffset: 0.75
   gridOddOffset: 0.5
 --- !u!1 &963194225

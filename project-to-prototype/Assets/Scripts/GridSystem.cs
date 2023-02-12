@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
+using UnityEngine.WSA;
 
 [ExecuteInEditMode]
 public class GridSystem : MonoBehaviour
@@ -9,6 +11,7 @@ public class GridSystem : MonoBehaviour
 
     [Header("Grid tile types")]
     [SerializeField] private HexTileTypes hexTileTypes;
+    public List<TileGenerationChance> Tiles = new List<TileGenerationChance>();
 
     [Header("Grid size")]
     [SerializeField] private int gridHeight = 10;
@@ -17,6 +20,8 @@ public class GridSystem : MonoBehaviour
     [Header("Grid gen options")]
     [SerializeField] private float hexHeightOffset = 0.75f;
     [SerializeField] private float gridOddOffset = 0.5f;
+
+    private List<int> tilePool;
 
     public void ClearHexGrid()
     {
@@ -29,11 +34,25 @@ public class GridSystem : MonoBehaviour
     public void GenerateHexGrid()
     {
         ClearHexGrid();
+        CreateTilePool();
         for (int i = 0; i < gridWidth; i++)
         {
             for (int j = 0; j < gridHeight; j++)
             {
                 GenerateHexTile(i, j);
+            }
+        }
+    }
+
+    private void CreateTilePool()
+    {
+        Tiles[0].TileChance = 0;
+        tilePool = new List<int>();
+        for (int i = 0; i < Tiles.Count; i++)
+        {
+            for (int j = 0; j < (Tiles[i].TileChance * 10); j++)
+            {
+                tilePool.Add(i);
             }
         }
     }
@@ -44,7 +63,7 @@ public class GridSystem : MonoBehaviour
         GameObject hexPrefab = hexTileTypes.TileTypes[0].TilePrefab;
         GameObject hex = Instantiate(hexPrefab, new Vector3(0, 0, 0), Quaternion.identity, transform);
 
-        hex.GetComponent<HexTileSettings>().SetTileType(Random.Range(1,3));
+        hex.GetComponent<HexTileSettings>().SetTileType(GetTileType(xPos, zPos));
         hex.GetComponent<HexTileSettings>().UpdateTileType();
 
         float hexWidth = hex.transform.GetChild(0).GetComponent<Renderer>().bounds.size.x;
@@ -57,5 +76,10 @@ public class GridSystem : MonoBehaviour
 
         hex.transform.position = new Vector3(x, 0, z);
         hex.name = $"Hex {xPos},{zPos}";
+    }
+
+    private int GetTileType(int xPos, int zPos)
+    {
+        return tilePool[Random.Range(0, tilePool.Count)];
     }
 }

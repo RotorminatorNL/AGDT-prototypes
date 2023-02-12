@@ -19,5 +19,3 @@ MonoBehaviour:
     TilePrefab: {fileID: 1034398648363416, guid: 724d1dba07b41c34282d4078db00274d, type: 3}
   - TileName: Water
     TilePrefab: {fileID: 1209033865668100, guid: ba18ad1c2b7e68644b186f04055c20f2, type: 3}
-  - TileName: SwegCity
-    TilePrefab: {fileID: 100000, guid: ec55075d188c17f409c030e2fa6d4ebf, type: 3}
