@@ -49,6 +49,7 @@ public class GridSystemV3 : MonoBehaviour
     private void GenerateGrid()
     {
         mesh = new Mesh();
+        mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
         GetComponent<MeshFilter>().mesh = mesh;
 
         CalculateInnerGridBounds();
@@ -58,9 +59,6 @@ public class GridSystemV3 : MonoBehaviour
         UpdateTrianglesPoints();
 
         UpdateMesh();
-
-        Debug.Log(vertices.Length);
-        Debug.Log(allTrianglePoints.Length);
     }
 
     private void CalculateInnerGridBounds()
