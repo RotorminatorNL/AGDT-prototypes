@@ -24,7 +24,7 @@ public class GridSystemV3 : MonoBehaviour
 
     [Space(15)]
     [SerializeField] private int outerToInnerTransition = 2;
-    [SerializeField, Range(0f, 1f)] private float transitionStrengh = 0.8f;
+    [SerializeField, Range(0f, 1f)] private float transitionSmoothness = 0.8f;
     private Dictionary<int, float> transitionXVertices = new Dictionary<int, float>();
     private Dictionary<int, float> transitionZVertices = new Dictionary<int, float>();
 
@@ -42,7 +42,7 @@ public class GridSystemV3 : MonoBehaviour
 
     private void Update()
     {
-        if (outerGridXLength <= 0 || outerGridZLength <= 0 || innerGridXLength <= 0 || innerGridZLength <= 0) return;
+        if (outerGridXLength <= 0 || outerGridZLength <= 0 || innerGridXLength <= 0 || innerGridZLength <= 0 || outerToInnerTransition <= 0) return;
         GenerateGrid();
     }
 
@@ -83,7 +83,7 @@ public class GridSystemV3 : MonoBehaviour
                 otherSideOfX = true;
             }
 
-            transitionXVertices.Add(i, (otherSideOfX == false ? (float)x-- : (float)x++) / (float)outerToInnerTransition * transitionStrengh);
+            transitionXVertices.Add(i, (otherSideOfX == false ? (float)x-- : (float)x++) / (float)outerToInnerTransition * transitionSmoothness);
         }
 
         transitionZVertices = new Dictionary<int, float>();
@@ -97,7 +97,7 @@ public class GridSystemV3 : MonoBehaviour
                 otherSideOfZ = true;
             }
 
-            transitionZVertices.Add(i, (otherSideOfZ == false ? (float)x-- : (float)x++) / (float)outerToInnerTransition * transitionStrengh);
+            transitionZVertices.Add(i, (otherSideOfZ == false ? (float)x-- : (float)x++) / (float)outerToInnerTransition * transitionSmoothness);
         }
     }
 
@@ -117,20 +117,31 @@ public class GridSystemV3 : MonoBehaviour
 
     private float SetYValue(int indexOfX, int indexOfZ)
     {
-        if (innerGridXStart <= indexOfX && innerGridXEnd >= indexOfX && innerGridZStart <= indexOfZ && innerGridZEnd >= indexOfZ)
-        {
-            return 0f;
-        }
+        if (innerGridXStart <= indexOfX && innerGridXEnd >= indexOfX && innerGridZStart <= indexOfZ && innerGridZEnd >= indexOfZ) return 0f;
 
         float perlinNoiseXCoord = indexOfX * perlinNoiseXScale + perlinNoiseXCoordOffset;
         float perlinNoiseZCoord = indexOfZ * perlinNoiseZScale + perlinNoiseZCoordOffset;
 
         float perlinNoise = Mathf.PerlinNoise(perlinNoiseXCoord, perlinNoiseZCoord) * perlinNoiseYScale;
 
-        if (transitionXVertices.ContainsKey(indexOfX) && innerGridZStart - outerToInnerTransition < indexOfZ && innerGridZEnd + outerToInnerTransition > indexOfZ) perlinNoise *= transitionXVertices[indexOfX];
-        else if (transitionZVertices.ContainsKey(indexOfZ) && innerGridXStart - outerToInnerTransition < indexOfX && innerGridXEnd + outerToInnerTransition > indexOfX) perlinNoise *= transitionZVertices[indexOfZ];
+        perlinNoise *= GetTransitionPercentage(indexOfX, indexOfZ);
 
         return perlinNoise;
+    }
+
+    private float GetTransitionPercentage(int indexOfX, int indexOfZ)
+    {
+        if (transitionXVertices.ContainsKey(indexOfX) && innerGridZStart <= indexOfZ && innerGridZEnd >= indexOfZ) return transitionXVertices[indexOfX];
+        else if (transitionZVertices.ContainsKey(indexOfZ) && innerGridXStart <= indexOfX && innerGridXEnd >= indexOfX) return transitionZVertices[indexOfZ];
+        else if (transitionXVertices.ContainsKey(indexOfX) && transitionZVertices.ContainsKey(indexOfZ))
+        {
+            if (indexOfX <= innerGridXStart && indexOfZ <= innerGridZStart) return indexOfX <= indexOfZ ? transitionXVertices[indexOfX] : transitionZVertices[indexOfZ];
+            else if (indexOfX >= innerGridXEnd && indexOfZ <= innerGridZStart) return (indexOfX - innerGridXEnd) >= (innerGridZStart - indexOfZ) ? transitionXVertices[indexOfX] : transitionZVertices[indexOfZ];
+            else if (indexOfX <= innerGridXStart && indexOfZ >= innerGridZEnd) return (innerGridXStart - indexOfX) >= (indexOfZ - innerGridZEnd) ? transitionXVertices[indexOfX] : transitionZVertices[indexOfZ];
+            else return indexOfX >= indexOfZ ? transitionXVertices[indexOfX] : transitionZVertices[indexOfZ];
+        }
+
+        return 1;
     }
 
     private void UpdateTrianglesPoints()
