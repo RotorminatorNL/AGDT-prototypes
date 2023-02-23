@@ -135,10 +135,10 @@ public class GridSystemV3 : MonoBehaviour
         else if (transitionZVertices.ContainsKey(indexOfZ) && innerGridXStart <= indexOfX && innerGridXEnd >= indexOfX) return transitionZVertices[indexOfZ];
         else if (transitionXVertices.ContainsKey(indexOfX) && transitionZVertices.ContainsKey(indexOfZ))
         {
-            if (indexOfX <= innerGridXStart && indexOfZ <= innerGridZStart) return indexOfX <= indexOfZ ? transitionXVertices[indexOfX] : transitionZVertices[indexOfZ];
+            if (indexOfX <= innerGridXStart && indexOfZ <= innerGridZStart) return (indexOfX - innerGridXStart) <= (indexOfZ - innerGridZStart) ? transitionXVertices[indexOfX] : transitionZVertices[indexOfZ];
             else if (indexOfX >= innerGridXEnd && indexOfZ <= innerGridZStart) return (indexOfX - innerGridXEnd) >= (innerGridZStart - indexOfZ) ? transitionXVertices[indexOfX] : transitionZVertices[indexOfZ];
             else if (indexOfX <= innerGridXStart && indexOfZ >= innerGridZEnd) return (innerGridXStart - indexOfX) >= (indexOfZ - innerGridZEnd) ? transitionXVertices[indexOfX] : transitionZVertices[indexOfZ];
-            else return indexOfX >= indexOfZ ? transitionXVertices[indexOfX] : transitionZVertices[indexOfZ];
+            else return (indexOfX - innerGridXEnd) >= (indexOfZ - innerGridZEnd) ? transitionXVertices[indexOfX] : transitionZVertices[indexOfZ];
         }
 
         return 1;
