@@ -11,20 +11,20 @@ public class GridSystemV3 : MonoBehaviour
     private int[] allTrianglePoints;
 
     [Header("Grid settings")]
-    [SerializeField] private int outerGridXLength = 120;
-    [SerializeField] private int outerGridZLength = 80;
+    [SerializeField] private int gridXLength = 120;
+    [SerializeField] private int gridZLength = 80;
 
     [Space(15)]
-    [SerializeField] private int innerGridXLength = 80;
-    private int innerGridXStart;
-    private int innerGridXEnd;
-    [SerializeField] private int innerGridZLength = 50;
-    private int innerGridZStart;
-    private int innerGridZEnd;
+    [SerializeField] private int flatTerrainXLength = 80;
+    private int flatTerrainXStart;
+    private int flatTerrainXEnd;
+    [SerializeField] private int flatTerrainZLength = 50;
+    private int flatTerrainZStart;
+    private int flatTerrainZEnd;
 
     [Space(15)]
-    [SerializeField] private int outerToInnerTransition = 2;
-    [SerializeField, Range(0f, 1f)] private float transitionSmoothness = 0.8f;
+    [SerializeField] private int flatTerrainTransition = 2;
+    [SerializeField, Range(0f, 1f)] private float transitionForce = 0.8f;
     private Dictionary<int, float> transitionXVertices = new Dictionary<int, float>();
     private Dictionary<int, float> transitionZVertices = new Dictionary<int, float>();
 
@@ -42,7 +42,7 @@ public class GridSystemV3 : MonoBehaviour
 
     private void Update()
     {
-        if (outerGridXLength <= 0 || outerGridZLength <= 0 || innerGridXLength <= 0 || innerGridZLength <= 0 || outerToInnerTransition <= 0) return;
+        if (gridXLength <= 0 || gridZLength <= 0 || flatTerrainXLength <= 0 || flatTerrainZLength <= 0 || flatTerrainTransition <= 0) return;
         GenerateGrid();
     }
 
@@ -52,9 +52,9 @@ public class GridSystemV3 : MonoBehaviour
         mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
         GetComponent<MeshFilter>().mesh = mesh;
 
-        CalculateInnerGridBounds();
-        transitionXVertices = CalculateTransitionBounds(innerGridXStart, innerGridXEnd, innerGridXLength);
-        transitionZVertices = CalculateTransitionBounds(innerGridZStart, innerGridZEnd, innerGridZLength);
+        CalculateFlatTerrainBounds();
+        transitionXVertices = CalculateTransitionBounds(flatTerrainXStart, flatTerrainXEnd, flatTerrainXLength);
+        transitionZVertices = CalculateTransitionBounds(flatTerrainZStart, flatTerrainZEnd, flatTerrainZLength);
 
         UpdateVertices();
         UpdateTrianglesPoints();
@@ -62,20 +62,20 @@ public class GridSystemV3 : MonoBehaviour
         UpdateMesh();
     }
 
-    private void CalculateInnerGridBounds()
+    private void CalculateFlatTerrainBounds()
     {
-        innerGridXStart = (outerGridXLength - innerGridXLength) / 2;
-        innerGridXEnd = innerGridXStart + innerGridXLength;
+        flatTerrainXStart = (gridXLength - flatTerrainXLength) / 2;
+        flatTerrainXEnd = flatTerrainXStart + flatTerrainXLength;
 
-        innerGridZStart = (outerGridZLength - innerGridZLength) / 2;
-        innerGridZEnd = innerGridZStart + innerGridZLength;
+        flatTerrainZStart = (gridZLength - flatTerrainZLength) / 2;
+        flatTerrainZEnd = flatTerrainZStart + flatTerrainZLength;
     }
 
     private Dictionary<int, float> CalculateTransitionBounds(int innerGridStart, int innerGridEnd, int innerGridLength)
     {
         Dictionary<int, float> transitionVertices = new Dictionary<int, float>();
         bool otherSide = false;
-        for (int x = outerToInnerTransition, i = innerGridStart - outerToInnerTransition; i <= innerGridEnd + outerToInnerTransition; i++)
+        for (int x = flatTerrainTransition, i = innerGridStart - flatTerrainTransition; i <= innerGridEnd + flatTerrainTransition; i++)
         {
             if (i == innerGridStart)
             {
@@ -84,18 +84,18 @@ public class GridSystemV3 : MonoBehaviour
                 otherSide = true;
             }
 
-            transitionVertices.Add(i, (otherSide == false ? (float)x-- : (float)x++) / (float)outerToInnerTransition * transitionSmoothness);
+            transitionVertices.Add(i, (otherSide == false ? (float)x-- : (float)x++) / (float)flatTerrainTransition * transitionForce);
         }
         return transitionVertices;
     }
 
     private void UpdateVertices()
     {
-        vertices = new Vector3[(outerGridXLength + 1) * (outerGridZLength + 1)];
+        vertices = new Vector3[(gridXLength + 1) * (gridZLength + 1)];
 
-        for (int i = 0, z = 0; z <= outerGridZLength; z++)
+        for (int i = 0, z = 0; z <= gridZLength; z++)
         {
-            for (int x = 0; x <= outerGridXLength; x++)
+            for (int x = 0; x <= gridXLength; x++)
             {
                 vertices[i] = new Vector3(x, SetYValue(x, z), z);
                 i++;
@@ -105,7 +105,7 @@ public class GridSystemV3 : MonoBehaviour
 
     private float SetYValue(int indexOfX, int indexOfZ)
     {
-        if (innerGridXStart <= indexOfX && innerGridXEnd >= indexOfX && innerGridZStart <= indexOfZ && innerGridZEnd >= indexOfZ) return 0f;
+        if (flatTerrainXStart <= indexOfX && flatTerrainXEnd >= indexOfX && flatTerrainZStart <= indexOfZ && flatTerrainZEnd >= indexOfZ) return 0f;
 
         float perlinNoiseXCoord = indexOfX * perlinNoiseXScale + perlinNoiseXCoordOffset;
         float perlinNoiseZCoord = indexOfZ * perlinNoiseZScale + perlinNoiseZCoordOffset;
@@ -119,14 +119,14 @@ public class GridSystemV3 : MonoBehaviour
 
     private float GetTransitionPercentage(int indexOfX, int indexOfZ)
     {
-        if (transitionXVertices.ContainsKey(indexOfX) && innerGridZStart <= indexOfZ && innerGridZEnd >= indexOfZ) return transitionXVertices[indexOfX];
-        else if (transitionZVertices.ContainsKey(indexOfZ) && innerGridXStart <= indexOfX && innerGridXEnd >= indexOfX) return transitionZVertices[indexOfZ];
+        if (transitionXVertices.ContainsKey(indexOfX) && flatTerrainZStart <= indexOfZ && flatTerrainZEnd >= indexOfZ) return transitionXVertices[indexOfX];
+        else if (transitionZVertices.ContainsKey(indexOfZ) && flatTerrainXStart <= indexOfX && flatTerrainXEnd >= indexOfX) return transitionZVertices[indexOfZ];
         else if (transitionXVertices.ContainsKey(indexOfX) && transitionZVertices.ContainsKey(indexOfZ))
         {
-            if (indexOfX <= innerGridXStart && indexOfZ <= innerGridZStart) return (indexOfX - innerGridXStart) <= (indexOfZ - innerGridZStart) ? transitionXVertices[indexOfX] : transitionZVertices[indexOfZ];
-            else if (indexOfX >= innerGridXEnd && indexOfZ <= innerGridZStart) return (indexOfX - innerGridXEnd) >= (innerGridZStart - indexOfZ) ? transitionXVertices[indexOfX] : transitionZVertices[indexOfZ];
-            else if (indexOfX <= innerGridXStart && indexOfZ >= innerGridZEnd) return (innerGridXStart - indexOfX) >= (indexOfZ - innerGridZEnd) ? transitionXVertices[indexOfX] : transitionZVertices[indexOfZ];
-            else return (indexOfX - innerGridXEnd) >= (indexOfZ - innerGridZEnd) ? transitionXVertices[indexOfX] : transitionZVertices[indexOfZ];
+            if (indexOfX <= flatTerrainXStart && indexOfZ <= flatTerrainZStart) return (indexOfX - flatTerrainXStart) <= (indexOfZ - flatTerrainZStart) ? transitionXVertices[indexOfX] : transitionZVertices[indexOfZ];
+            else if (indexOfX >= flatTerrainXEnd && indexOfZ <= flatTerrainZStart) return (indexOfX - flatTerrainXEnd) >= (flatTerrainZStart - indexOfZ) ? transitionXVertices[indexOfX] : transitionZVertices[indexOfZ];
+            else if (indexOfX <= flatTerrainXStart && indexOfZ >= flatTerrainZEnd) return (flatTerrainXStart - indexOfX) >= (indexOfZ - flatTerrainZEnd) ? transitionXVertices[indexOfX] : transitionZVertices[indexOfZ];
+            else return (indexOfX - flatTerrainXEnd) >= (indexOfZ - flatTerrainZEnd) ? transitionXVertices[indexOfX] : transitionZVertices[indexOfZ];
         }
 
         return 1;
@@ -134,21 +134,21 @@ public class GridSystemV3 : MonoBehaviour
 
     private void UpdateTrianglesPoints()
     {
-        allTrianglePoints = new int[outerGridXLength * outerGridZLength * 6];
+        allTrianglePoints = new int[gridXLength * gridZLength * 6];
 
         int currentVert = 0;
         int currentSqaure = 0;
 
-        for (int z = 0; z < outerGridZLength; z++)
+        for (int z = 0; z < gridZLength; z++)
         {
-            for (int x = 0; x < outerGridXLength; x++)
+            for (int x = 0; x < gridXLength; x++)
             {
                 allTrianglePoints[currentSqaure * 6 + 0] = currentVert + 0;
-                allTrianglePoints[currentSqaure * 6 + 1] = currentVert + outerGridXLength + 1;
+                allTrianglePoints[currentSqaure * 6 + 1] = currentVert + gridXLength + 1;
                 allTrianglePoints[currentSqaure * 6 + 2] = currentVert + 1;
                 allTrianglePoints[currentSqaure * 6 + 3] = currentVert + 1;
-                allTrianglePoints[currentSqaure * 6 + 4] = currentVert + outerGridXLength + 1;
-                allTrianglePoints[currentSqaure * 6 + 5] = currentVert + outerGridXLength + 2;
+                allTrianglePoints[currentSqaure * 6 + 4] = currentVert + gridXLength + 1;
+                allTrianglePoints[currentSqaure * 6 + 5] = currentVert + gridXLength + 2;
 
                 currentVert++;
                 currentSqaure++;
