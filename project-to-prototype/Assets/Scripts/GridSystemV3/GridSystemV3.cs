@@ -53,7 +53,8 @@ public class GridSystemV3 : MonoBehaviour
         GetComponent<MeshFilter>().mesh = mesh;
 
         CalculateInnerGridBounds();
-        CalculateTransitionBounds();
+        transitionXVertices = CalculateTransitionBounds(innerGridXStart, innerGridXEnd, innerGridXLength);
+        transitionZVertices = CalculateTransitionBounds(innerGridZStart, innerGridZEnd, innerGridZLength);
 
         UpdateVertices();
         UpdateTrianglesPoints();
@@ -70,35 +71,22 @@ public class GridSystemV3 : MonoBehaviour
         innerGridZEnd = innerGridZStart + innerGridZLength;
     }
 
-    private void CalculateTransitionBounds()
+    private Dictionary<int, float> CalculateTransitionBounds(int innerGridStart, int innerGridEnd, int innerGridLength)
     {
-        transitionXVertices = new Dictionary<int, float>();
-        bool otherSideOfX = false;
-        for (int x = outerToInnerTransition, i = innerGridXStart - outerToInnerTransition; i <= innerGridXEnd + outerToInnerTransition; i++)
+        Dictionary<int, float> transitionVertices = new Dictionary<int, float>();
+        bool otherSide = false;
+        for (int x = outerToInnerTransition, i = innerGridStart - outerToInnerTransition; i <= innerGridEnd + outerToInnerTransition; i++)
         {
-            if (i == innerGridXStart)
+            if (i == innerGridStart)
             {
-                i += innerGridXLength + 1;
+                i += innerGridLength + 1;
                 x = 1;
-                otherSideOfX = true;
+                otherSide = true;
             }
 
-            transitionXVertices.Add(i, (otherSideOfX == false ? (float)x-- : (float)x++) / (float)outerToInnerTransition * transitionSmoothness);
+            transitionVertices.Add(i, (otherSide == false ? (float)x-- : (float)x++) / (float)outerToInnerTransition * transitionSmoothness);
         }
-
-        transitionZVertices = new Dictionary<int, float>();
-        bool otherSideOfZ = false;
-        for (int x = outerToInnerTransition, i = innerGridZStart - outerToInnerTransition; i <= innerGridZEnd + outerToInnerTransition; i++)
-        {
-            if (i == innerGridZStart)
-            {
-                i += innerGridZLength + 1;
-                x = 1;
-                otherSideOfZ = true;
-            }
-
-            transitionZVertices.Add(i, (otherSideOfZ == false ? (float)x-- : (float)x++) / (float)outerToInnerTransition * transitionSmoothness);
-        }
+        return transitionVertices;
     }
 
     private void UpdateVertices()

@@ -275,7 +275,7 @@ MonoBehaviour:
   innerGridZLength: 50
   outerToInnerTransition: 20
   transitionSmoothness: 1
-  perlinNoiseXCoordOffset: 1
+  perlinNoiseXCoordOffset: 0
   perlinNoiseXScale: 0.1
   perlinNoiseZCoordOffset: 0
   perlinNoiseZScale: 0.1
