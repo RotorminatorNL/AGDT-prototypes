@@ -11,34 +11,35 @@ public class GridSystemV3 : MonoBehaviour
     private int[] allTrianglePoints;
 
     [Header("Grid settings")]
-    [SerializeField] private int gridXLength = 120;
-    [SerializeField] private int gridZLength = 80;
+    [SerializeField] private int gridXLength = 300;
+    [SerializeField] private int gridZLength = 250;
 
-    [Space(15)]
-    [SerializeField] private int flatTerrainXLength = 80;
+    [Space(10)]
+    [Header("Perlin Noise settings")]
+    [SerializeField] private float perlinNoiseXCoordOffset = 0f;
+    [SerializeField, Range(0.01f, 1f)] private float perlinNoiseXScale = 0.05f;
+
+    [Space(10)]
+    [SerializeField] private float perlinNoiseZCoordOffset = 0f;
+    [SerializeField, Range(0.01f, 1f)] private float perlinNoiseZScale = 0.05f;
+
+    [Space(10)]
+    [SerializeField, Range(0, 30)] private float perlinNoiseYScale = 10f;
+
+    [Space(10)]
+    [Header("Flat terrain settings")]
+    [SerializeField] private int flatTerrainXLength = 150;
     private int flatTerrainXStart;
     private int flatTerrainXEnd;
-    [SerializeField] private int flatTerrainZLength = 50;
+    [SerializeField] private int flatTerrainZLength = 100;
     private int flatTerrainZStart;
     private int flatTerrainZEnd;
 
-    [Space(15)]
-    [SerializeField] private int flatTerrainTransition = 2;
+    [Space(10)]
+    [SerializeField] private int flatTerrainTransition = 20;
     [SerializeField, Range(0f, 1f)] private float transitionForce = 0.8f;
     private Dictionary<int, float> transitionXVertices = new Dictionary<int, float>();
     private Dictionary<int, float> transitionZVertices = new Dictionary<int, float>();
-
-    [Space(20)]
-    [Header("Perlin Noise settings")]
-    [SerializeField] private float perlinNoiseXCoordOffset = 0f;
-    [SerializeField, Range(0.01f, 1f)] private float perlinNoiseXScale = 0.1f;
-
-    [Space(15)]
-    [SerializeField] private float perlinNoiseZCoordOffset = 0f;
-    [SerializeField, Range(0.01f, 1f)] private float perlinNoiseZScale = 0.1f;
-
-    [Space(15)]
-    [SerializeField, Range(0, 30)] private float perlinNoiseYScale = 10f;
 
     private void Update()
     {

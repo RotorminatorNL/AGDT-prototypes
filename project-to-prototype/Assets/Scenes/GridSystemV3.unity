@@ -269,17 +269,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 720e6942e3c7b8a4c936bdf322c4d456, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outerGridXLength: 200
-  outerGridZLength: 200
-  innerGridXLength: 50
-  innerGridZLength: 50
-  outerToInnerTransition: 20
-  transitionSmoothness: 1
+  gridXLength: 300
+  gridZLength: 250
   perlinNoiseXCoordOffset: 0
   perlinNoiseXScale: 0.1
   perlinNoiseZCoordOffset: 0
   perlinNoiseZScale: 0.1
-  perlinNoiseYScale: 20
+  perlinNoiseYScale: 10
+  flatTerrainXLength: 150
+  flatTerrainZLength: 100
+  flatTerrainTransition: 20
+  transitionForce: 0.8
 --- !u!23 &1272057443
 MeshRenderer:
   m_ObjectHideFlags: 0
