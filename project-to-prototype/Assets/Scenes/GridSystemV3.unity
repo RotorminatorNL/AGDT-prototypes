@@ -272,14 +272,14 @@ MonoBehaviour:
   gridXLength: 300
   gridZLength: 250
   perlinNoiseXCoordOffset: 0
-  perlinNoiseXScale: 0.1
+  perlinNoiseXScale: 0.05
   perlinNoiseZCoordOffset: 0
-  perlinNoiseZScale: 0.1
-  perlinNoiseYScale: 10
+  perlinNoiseZScale: 0.05
+  perlinNoiseYScale: 30
   flatTerrainXLength: 150
   flatTerrainZLength: 100
-  flatTerrainTransition: 20
-  transitionForce: 0.8
+  transitionLength: 20
+  transitionCurve: 1.5
 --- !u!23 &1272057443
 MeshRenderer:
   m_ObjectHideFlags: 0

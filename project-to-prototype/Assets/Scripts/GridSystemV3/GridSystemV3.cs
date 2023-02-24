@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using UnityEngine;
 
 [RequireComponent(typeof(MeshFilter))]
@@ -36,14 +37,14 @@ public class GridSystemV3 : MonoBehaviour
     private int flatTerrainZEnd;
 
     [Space(10)]
-    [SerializeField] private int flatTerrainTransition = 20;
-    [SerializeField, Range(0f, 1f)] private float transitionForce = 0.8f;
+    [SerializeField] private int transitionLength = 20;
+    [SerializeField, Range(0f, 10f)] private float transitionCurve = 1.5f;
     private Dictionary<int, float> transitionXVertices = new Dictionary<int, float>();
     private Dictionary<int, float> transitionZVertices = new Dictionary<int, float>();
 
     private void Update()
     {
-        if (gridXLength <= 0 || gridZLength <= 0 || flatTerrainXLength <= 0 || flatTerrainZLength <= 0 || flatTerrainTransition <= 0) return;
+        if (gridXLength <= 0 || gridZLength <= 0 || flatTerrainXLength <= 0 || flatTerrainZLength <= 0 || transitionLength <= 0) return;
         GenerateGrid();
     }
 
@@ -76,7 +77,7 @@ public class GridSystemV3 : MonoBehaviour
     {
         Dictionary<int, float> transitionVertices = new Dictionary<int, float>();
         bool otherSide = false;
-        for (int x = flatTerrainTransition, i = innerGridStart - flatTerrainTransition; i <= innerGridEnd + flatTerrainTransition; i++)
+        for (int x = transitionLength, i = innerGridStart - transitionLength; i <= innerGridEnd + transitionLength; i++)
         {
             if (i == innerGridStart)
             {
@@ -85,9 +86,23 @@ public class GridSystemV3 : MonoBehaviour
                 otherSide = true;
             }
 
-            transitionVertices.Add(i, (otherSide == false ? (float)x-- : (float)x++) / (float)flatTerrainTransition * transitionForce);
+            float percentage = CalculatePercentage(otherSide == false ? x-- : x++);
+            transitionVertices.Add(i, percentage);
         }
         return transitionVertices;
+    }
+
+    private float CalculatePercentage(float currentStep)
+    {
+        if (currentStep == transitionLength) return 1f;
+        else if (currentStep == 0f) return 0f;
+        else
+        {
+            float percentage = currentStep / transitionLength;
+            percentage = Mathf.Pow(percentage, transitionCurve);
+            percentage = Mathf.Lerp(0f, 100f, percentage);
+            return percentage / 100f;
+        }
     }
 
     private void UpdateVertices()
