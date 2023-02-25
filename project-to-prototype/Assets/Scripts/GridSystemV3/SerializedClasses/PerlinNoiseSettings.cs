@@ -14,4 +14,41 @@ public class PerlinNoiseSettings
 
     [Space(10)]
     [Range(0, 30)] public float PerlinNoiseYScale = 10f;
+
+    private float previousPerlinNoiseXCoordOffset;
+    private float perviousPerlinNoiseXScale;
+    private float previousPerlinNoiseZCoordOffset;
+    private float previousPerlinNoiseZScale;
+    private float previousPerlinNoiseYScale;
+
+    public void UpdateValues()
+    {
+        previousPerlinNoiseXCoordOffset = PerlinNoiseXCoordOffset;
+        perviousPerlinNoiseXScale = PerlinNoiseXScale;
+        previousPerlinNoiseZCoordOffset = PerlinNoiseZCoordOffset;
+        previousPerlinNoiseZScale = PerlinNoiseZScale;
+        previousPerlinNoiseYScale = PerlinNoiseYScale;
+    }
+
+    public bool HasValueChanged()
+    {
+        if (previousPerlinNoiseXCoordOffset == PerlinNoiseXCoordOffset && perviousPerlinNoiseXScale == PerlinNoiseXScale &&
+            previousPerlinNoiseZCoordOffset == PerlinNoiseZCoordOffset && previousPerlinNoiseZScale == PerlinNoiseZScale &&
+            previousPerlinNoiseYScale == PerlinNoiseYScale) return false;
+
+        previousPerlinNoiseXCoordOffset = PerlinNoiseXCoordOffset;
+        perviousPerlinNoiseXScale = PerlinNoiseXScale;
+        previousPerlinNoiseZCoordOffset = PerlinNoiseZCoordOffset;
+        previousPerlinNoiseZScale = PerlinNoiseZScale;
+        previousPerlinNoiseYScale = PerlinNoiseYScale;
+        return true;
+    }
+
+    public float GetPerlinNoiseValue(float indexOfX, float indexOfZ)
+    {
+        float perlinNoiseXCoord = indexOfX * PerlinNoiseXScale + PerlinNoiseXCoordOffset;
+        float perlinNoiseZCoord = indexOfZ * PerlinNoiseZScale + PerlinNoiseZCoordOffset;
+
+        return Mathf.PerlinNoise(perlinNoiseXCoord, perlinNoiseZCoord) * PerlinNoiseYScale;
+    }
 }

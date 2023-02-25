@@ -12,6 +12,7 @@ public class GridSystemV3 : MonoBehaviour
     private int[] allTrianglePoints;
 
     [SerializeField] private bool generatorActive = true;
+    private bool firstGeneration = true;
 
     [Space(10)]
     [SerializeField] private GridSettings gridSettings;
@@ -25,116 +26,48 @@ public class GridSystemV3 : MonoBehaviour
     [Space(10)]
     [SerializeField] private TransitionSettings transitionSettings;
 
-    // Variable to check for change
-    private bool previousGeneratorActive;
-    private int previousGridXLength;
-    private int previousGridZLength;
-    private float previousPerlinNoiseXCoordOffset;
-    private float perviousPerlinNoiseXScale;
-    private float previousPerlinNoiseZCoordOffset;
-    private float previousPerlinNoiseZScale;
-    private float previousPerlinNoiseYScale;
-    private int previousHexTerrainXLength;
-    private int previousHexTerrainZLength;
-    private int previousTransitionLength;
-    private float previousTransitionCurve;
-
     private void Update()
     {
-        // Prevent generation if value <= 0
         if (gridSettings.GridXLength <= 0 || gridSettings.GridZLength <= 0 || hexTerrainSettings.HexTerrainXLength <= 0 || hexTerrainSettings.HexTerrainZLength <= 0 || transitionSettings.TransitionLength <= 0) return;
 
-        // No change, no generation
-        if (IsValueChanged() && generatorActive) GenerateGrid();
+        if (generatorActive)
+        {
+            if (firstGeneration)
+            {
+                gridSettings.UpdateValues();
+                perlinNoiseSettings.UpdateValues();
+                hexTerrainSettings.UpdateValues();
+                transitionSettings.UpdateValues();
+
+                GenerateGrid();
+                firstGeneration = false;
+            }
+
+            if (HasValueChanged()) GenerateGrid();
+        }
     }
 
-    private bool IsValueChanged()
+    private bool HasValueChanged()
     {
-        // Check for changes
-        if (previousGeneratorActive == generatorActive &&
-            previousGridXLength == gridSettings.GridXLength &&
-            previousGridZLength == gridSettings.GridZLength &&
-            previousPerlinNoiseXCoordOffset == perlinNoiseSettings.PerlinNoiseXCoordOffset &&
-            perviousPerlinNoiseXScale == perlinNoiseSettings.PerlinNoiseXScale &&
-            previousPerlinNoiseZCoordOffset == perlinNoiseSettings.PerlinNoiseZCoordOffset &&
-            previousPerlinNoiseZScale == perlinNoiseSettings.PerlinNoiseZScale &&
-            previousPerlinNoiseYScale == perlinNoiseSettings.PerlinNoiseYScale &&
-            previousHexTerrainXLength == hexTerrainSettings.HexTerrainXLength &&
-            previousHexTerrainZLength == hexTerrainSettings.HexTerrainZLength &&
-            previousTransitionLength == transitionSettings.TransitionLength &&
-            previousTransitionCurve == transitionSettings.TransitionCurve) return false;
-
-        // Change detected -> store changes
-        previousGeneratorActive = generatorActive;
-        previousGridXLength = gridSettings.GridXLength;
-        previousGridZLength = gridSettings.GridZLength;
-        previousPerlinNoiseXCoordOffset = perlinNoiseSettings.PerlinNoiseXCoordOffset;
-        perviousPerlinNoiseXScale = perlinNoiseSettings.PerlinNoiseXScale;
-        previousPerlinNoiseZCoordOffset = perlinNoiseSettings.PerlinNoiseZCoordOffset;
-        previousPerlinNoiseZScale = perlinNoiseSettings.PerlinNoiseZScale;
-        previousPerlinNoiseYScale = perlinNoiseSettings.PerlinNoiseYScale;
-        previousHexTerrainXLength = hexTerrainSettings.HexTerrainXLength;
-        previousHexTerrainZLength = hexTerrainSettings.HexTerrainZLength;
-        previousTransitionLength = transitionSettings.TransitionLength;
-        previousTransitionCurve = transitionSettings.TransitionCurve;
-
-        return true;
+        if (gridSettings.HasValueChanged() || perlinNoiseSettings.HasValueChanged() || hexTerrainSettings.HasValueChanged() || transitionSettings.HasValueChanged()) return true;
+        return false;
     }
 
     private void GenerateGrid()
     {
+        Debug.Log("sweg");
+
         mesh = new Mesh();
         mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
         GetComponent<MeshFilter>().mesh = mesh;
 
-        CalculateHexTerrainBounds();
-        transitionSettings.TransitionXVertices = CalculateTransitionBounds(hexTerrainSettings.HexTerrainXStart, hexTerrainSettings.HexTerrainXEnd, hexTerrainSettings.HexTerrainXLength);
-        transitionSettings.TransitionZVertices = CalculateTransitionBounds(hexTerrainSettings.HexTerrainZStart, hexTerrainSettings.HexTerrainZEnd, hexTerrainSettings.HexTerrainZLength);
+        hexTerrainSettings.CalculateHexTerrainBounds(gridSettings);
+        transitionSettings.SetTransitionPercentages(hexTerrainSettings.HexTerrainXStart, hexTerrainSettings.HexTerrainXEnd, hexTerrainSettings.HexTerrainXLength, "X");
+        transitionSettings.SetTransitionPercentages(hexTerrainSettings.HexTerrainZStart, hexTerrainSettings.HexTerrainZEnd, hexTerrainSettings.HexTerrainZLength, "Z");
 
         UpdateVertices();
         UpdateTrianglesPoints();
         UpdateMesh();
-    }
-
-    private void CalculateHexTerrainBounds()
-    {
-        hexTerrainSettings.HexTerrainXStart = (gridSettings.GridXLength - hexTerrainSettings.HexTerrainXLength) / 2;
-        hexTerrainSettings.HexTerrainXEnd = hexTerrainSettings.HexTerrainXStart + hexTerrainSettings.HexTerrainXLength;
-
-        hexTerrainSettings.HexTerrainZStart = (gridSettings.GridZLength - hexTerrainSettings.HexTerrainZLength) / 2;
-        hexTerrainSettings.HexTerrainZEnd = hexTerrainSettings.HexTerrainZStart + hexTerrainSettings.HexTerrainZLength;
-    }
-
-    private Dictionary<int, float> CalculateTransitionBounds(int innerGridStart, int innerGridEnd, int innerGridLength)
-    {
-        Dictionary<int, float> transitionVertices = new Dictionary<int, float>();
-        bool otherSide = false;
-        for (int x = transitionSettings.TransitionLength, i = innerGridStart - transitionSettings.TransitionLength; i <= innerGridEnd + transitionSettings.TransitionLength; i++)
-        {
-            if (i == innerGridStart)
-            {
-                i += innerGridLength + 1;
-                x = 1;
-                otherSide = true;
-            }
-
-            float percentage = CalculatePercentage(otherSide == false ? x-- : x++);
-            transitionVertices.Add(i, percentage);
-        }
-        return transitionVertices;
-    }
-
-    private float CalculatePercentage(float currentStep)
-    {
-        if (currentStep == transitionSettings.TransitionLength) return 1f;
-        else if (currentStep == 0f) return 0f;
-        else
-        {
-            float percentage = currentStep / transitionSettings.TransitionLength;
-            percentage = Mathf.Pow(percentage, transitionSettings.TransitionCurve);
-            percentage = Mathf.Lerp(0f, 100f, percentage);
-            return percentage / 100f;
-        }
     }
 
     private void UpdateVertices()
@@ -145,24 +78,16 @@ public class GridSystemV3 : MonoBehaviour
         {
             for (int x = 0; x <= gridSettings.GridXLength; x++)
             {
-                vertices[i] = new Vector3(x, SetYValue(x, z), z);
+                vertices[i] = new Vector3(x, GetYValue(x, z), z);
                 i++;
             }
         }
     }
 
-    private float SetYValue(int indexOfX, int indexOfZ)
+    private float GetYValue(int indexOfX, int indexOfZ)
     {
         if (hexTerrainSettings.HexTerrainXStart <= indexOfX && hexTerrainSettings.HexTerrainXEnd >= indexOfX && hexTerrainSettings.HexTerrainZStart <= indexOfZ && hexTerrainSettings.HexTerrainZEnd >= indexOfZ) return 0f;
-
-        float perlinNoiseXCoord = indexOfX * perlinNoiseSettings.PerlinNoiseXScale + perlinNoiseSettings.PerlinNoiseXCoordOffset;
-        float perlinNoiseZCoord = indexOfZ * perlinNoiseSettings.PerlinNoiseZScale + perlinNoiseSettings.PerlinNoiseZCoordOffset;
-
-        float perlinNoise = Mathf.PerlinNoise(perlinNoiseXCoord, perlinNoiseZCoord) * perlinNoiseSettings.PerlinNoiseYScale;
-
-        perlinNoise *= GetTransitionPercentage(indexOfX, indexOfZ);
-
-        return perlinNoise;
+        return perlinNoiseSettings.GetPerlinNoiseValue(indexOfX, indexOfZ) * GetTransitionPercentage(indexOfX, indexOfZ);
     }
 
     private float GetTransitionPercentage(int indexOfX, int indexOfZ)
