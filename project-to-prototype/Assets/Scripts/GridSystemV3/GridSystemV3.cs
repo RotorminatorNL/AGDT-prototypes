@@ -11,6 +11,8 @@ public class GridSystemV3 : MonoBehaviour
     private Vector3[] vertices;
     private int[] allTrianglePoints;
 
+    [SerializeField] private bool generatorActive = true;
+
     [Header("Grid size")]
     [SerializeField] private int gridXLength = 300;
     [SerializeField] private int gridZLength = 250;
@@ -44,6 +46,7 @@ public class GridSystemV3 : MonoBehaviour
     private Dictionary<int, float> transitionZVertices = new Dictionary<int, float>();
 
     // Variable to check for change
+    private bool previousGeneratorActive;
     private int previousGridXLength;
     private int previousGridZLength;
     private float previousPerlinNoiseXCoordOffset;
@@ -62,13 +65,14 @@ public class GridSystemV3 : MonoBehaviour
         if (gridXLength <= 0 || gridZLength <= 0 || hexTerrainXLength <= 0 || hexTerrainZLength <= 0 || transitionLength <= 0) return;
 
         // No change, no generation
-        if (IsValueChanged()) GenerateGrid();
+        if (IsValueChanged() && generatorActive) GenerateGrid();
     }
 
     private bool IsValueChanged()
     {
         // Check for changes
-        if (previousGridXLength == gridXLength &&
+        if (previousGeneratorActive == generatorActive &&
+            previousGridXLength == gridXLength &&
             previousGridZLength == gridZLength &&
             previousPerlinNoiseXCoordOffset == perlinNoiseXCoordOffset &&
             perviousPerlinNoiseXScale == perlinNoiseXScale &&
@@ -81,6 +85,7 @@ public class GridSystemV3 : MonoBehaviour
             previousTransitionCurve == transitionCurve) return false;
 
         // Change detected -> store changes
+        previousGeneratorActive = generatorActive;
         previousGridXLength = gridXLength;
         previousGridZLength = gridZLength;
         previousPerlinNoiseXCoordOffset = perlinNoiseXCoordOffset;

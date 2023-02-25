@@ -269,6 +269,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 720e6942e3c7b8a4c936bdf322c4d456, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  generatorActive: 1
   gridXLength: 100
   gridZLength: 100
   perlinNoiseXCoordOffset: 0
