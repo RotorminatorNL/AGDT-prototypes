@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: TileTypes
   m_EditorClassIdentifier: 
   TileTypes:
-  - TileName: Standard
+  - TileName: Parent
     TilePrefab: {fileID: 1692578891167136568, guid: 9f6c4504d2d39354cbff663779335f71, type: 3}
   - TileName: Grass
     TilePrefab: {fileID: 1034398648363416, guid: 724d1dba07b41c34282d4078db00274d, type: 3}

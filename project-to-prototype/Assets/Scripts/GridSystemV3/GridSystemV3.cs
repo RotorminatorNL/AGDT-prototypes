@@ -14,6 +14,20 @@ public class GridSystemV3 : MonoBehaviour
     [SerializeField] private bool generatorActive = true;
     private bool firstGeneration = true;
 
+    // I know yikes, but it needs to be like this for now.
+
+    public HexTileTypes HexTileTypes { get { return hexTileTypes; } }
+    [Header("Temporary")]
+    [SerializeField] private HexTileTypes hexTileTypes;
+    public List<TileGenerationChance> Tiles = new List<TileGenerationChance>();
+    private List<int> tilePool;
+    [SerializeField] private float hexXOffset = 0f;
+    [SerializeField] private float hexZOffset = 0f;
+    [SerializeField] private float hexZCorrectionOffset = 0f;
+    [SerializeField] private float hexXOddOffset = 0.5f;
+
+    // I am serious I hate this too, so lit it be for now.
+
     [Space(10)]
     [SerializeField] private GridSettings gridSettings;
 
@@ -53,7 +67,7 @@ public class GridSystemV3 : MonoBehaviour
         return false;
     }
 
-    private void GenerateGrid()
+    public void GenerateGrid()
     {
         Debug.Log("sweg");
 
@@ -68,6 +82,8 @@ public class GridSystemV3 : MonoBehaviour
         UpdateVertices();
         UpdateTrianglesPoints();
         UpdateMesh();
+
+        GenerateHexTiles();
     }
 
     private void UpdateVertices()
@@ -148,5 +164,62 @@ public class GridSystemV3 : MonoBehaviour
         mesh.triangles = allTrianglePoints;
 
         mesh.RecalculateNormals();
+    }
+
+    private void GenerateHexTiles()
+    {
+        CreateTilePool();
+        ClearHexTiles();
+
+        for (int z = hexTerrainSettings.HexTerrainZStart; z < hexTerrainSettings.HexTerrainZEnd; z++)
+        {
+            for (int x = hexTerrainSettings.HexTerrainXStart; x < hexTerrainSettings.HexTerrainXEnd; x++)
+            {
+                GenerateHexTile(x, z);
+            }
+        }
+    }
+
+    private void CreateTilePool()
+    {
+        Tiles[0].TileChance = 0;
+        tilePool = new List<int>();
+        for (int i = 0; i < Tiles.Count; i++)
+        {
+            for (int j = 0; j < (Tiles[i].TileChance * 10); j++)
+            {
+                tilePool.Add(i);
+            }
+        }
+    }
+    public void ClearHexTiles()
+    {
+        for (int i = transform.childCount - 1; i >= 0; i--)
+        {
+            DestroyImmediate(transform.GetChild(i).gameObject);
+        }
+    }
+
+    private void GenerateHexTile(int xPos, int zPos)
+    {
+        if (hexTileTypes == null) return;
+        GameObject hexPrefab = hexTileTypes.TileTypes[0].TilePrefab;
+        GameObject hex = Instantiate(hexPrefab, new Vector3(0, 0, 0), Quaternion.identity, transform);
+
+        hex.GetComponent<HexTileSettings>().SetTileType(GetTileType());
+        hex.GetComponent<HexTileSettings>().UpdateTileType();
+
+        float x = xPos + hexXOffset;
+        float z = zPos + hexZOffset + ((zPos - hexTerrainSettings.HexTerrainZLength) * hexZCorrectionOffset);
+
+        if (zPos % 2 == 1) x += hexXOddOffset;
+
+        hex.transform.position = new Vector3(x, 1, z);
+        hex.name = $"Hex {xPos},{zPos}";
+    }
+
+    private int GetTileType()
+    {
+        return tilePool[Random.Range(0, tilePool.Count)];
     }
 }
