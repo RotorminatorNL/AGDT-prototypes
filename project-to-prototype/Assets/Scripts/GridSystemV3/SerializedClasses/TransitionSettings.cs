@@ -5,8 +5,8 @@ using UnityEngine;
 [System.Serializable]
 public class TransitionSettings
 {
-    public int TransitionLength = 20;
-    [Range(0f, 10f)] public float TransitionCurve = 1.5f;
+    public int TransitionLength = 10;
+    [Range(0f, 10f)] public float TransitionCurve = 1f;
     [HideInInspector] public Dictionary<int, float> TransitionXVertices;
     [HideInInspector] public Dictionary<int, float> TransitionZVertices;
 

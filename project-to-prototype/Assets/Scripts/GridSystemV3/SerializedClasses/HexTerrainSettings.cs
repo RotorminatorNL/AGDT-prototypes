@@ -5,11 +5,11 @@ using UnityEngine;
 [System.Serializable]
 public class HexTerrainSettings
 {
-    public int HexTerrainXLength = 150;
+    public int HexTerrainXLength = 50;
     [HideInInspector] public int HexTerrainXStart { get; private set; }
     [HideInInspector] public int HexTerrainXEnd { get; private set; }
 
-    public int HexTerrainZLength = 100;
+    public int HexTerrainZLength = 30;
     [HideInInspector] public int HexTerrainZStart { get; private set; }
     [HideInInspector] public int HexTerrainZEnd { get; private set; }
 

@@ -126,7 +126,7 @@ public class GridSystemV3 : MonoBehaviour
         allTrianglePoints = new int[gridSettings.GridXLength * gridSettings.GridZLength * 6];
 
         int currentVert = 0;
-        int currentSqaure = 0;
+        int currentSquare = 0;
 
         for (int z = 0; z < gridSettings.GridZLength; z++)
         {
@@ -141,16 +141,16 @@ public class GridSystemV3 : MonoBehaviour
                 }
                 else
                 {
-                    allTrianglePoints[currentSqaure * 6 + 0] = currentVert + 0;
-                    allTrianglePoints[currentSqaure * 6 + 1] = currentVert + gridSettings.GridXLength + 1;
-                    allTrianglePoints[currentSqaure * 6 + 2] = currentVert + 1;
-                    allTrianglePoints[currentSqaure * 6 + 3] = currentVert + 1;
-                    allTrianglePoints[currentSqaure * 6 + 4] = currentVert + gridSettings.GridXLength + 1;
-                    allTrianglePoints[currentSqaure * 6 + 5] = currentVert + gridSettings.GridXLength + 2;
+                    allTrianglePoints[currentSquare * 6 + 0] = currentVert + 0;
+                    allTrianglePoints[currentSquare * 6 + 1] = currentVert + gridSettings.GridXLength + 1;
+                    allTrianglePoints[currentSquare * 6 + 2] = currentVert + 1;
+                    allTrianglePoints[currentSquare * 6 + 3] = currentVert + 1;
+                    allTrianglePoints[currentSquare * 6 + 4] = currentVert + gridSettings.GridXLength + 1;
+                    allTrianglePoints[currentSquare * 6 + 5] = currentVert + gridSettings.GridXLength + 2;
                 }
 
                 currentVert++;
-                currentSqaure++;
+                currentSquare++;
             }
             currentVert++;
         }
