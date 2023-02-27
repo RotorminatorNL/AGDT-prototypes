@@ -5,8 +5,8 @@ using UnityEngine;
 [System.Serializable]
 public class GridSettings
 {
-    public int GridXLength = 100;
-    public int GridZLength = 80;
+    [Min(1)] public int GridXLength = 100;
+    [Min(1)] public int GridZLength = 80;
 
     private int previousGridXLength;
     private int previousGridZLength;
