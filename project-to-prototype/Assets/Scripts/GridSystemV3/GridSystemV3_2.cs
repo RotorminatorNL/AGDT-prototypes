@@ -11,6 +11,7 @@ public class GridSystemV3_2 : MonoBehaviour
     private int[] allTrianglePoints;
 
     [SerializeField] private GridSettings grid;
+    [SerializeField] private PerlinNoiseSettings perlinNoise;
     public HexagonTerrainSettings HexagonTerrain;
 
     private void Update()
@@ -20,6 +21,7 @@ public class GridSystemV3_2 : MonoBehaviour
         if (firstGeneration)
         {
             grid.UpdateValues();
+            perlinNoise.UpdateValues();
             HexagonTerrain.UpdateValues();
 
             GenerateGrid();
@@ -31,7 +33,7 @@ public class GridSystemV3_2 : MonoBehaviour
 
     private bool ValueChanged()
     {
-        if (grid.HasValueChanged()|| HexagonTerrain.HasValueChanged()) return true;
+        if (grid.HasValueChanged() || perlinNoise.HasValueChanged() || HexagonTerrain.HasValueChanged()) return true;
         return false;
     }
 
@@ -58,10 +60,16 @@ public class GridSystemV3_2 : MonoBehaviour
         {
             for (int x = 0; x <= grid.GridXLength; x++)
             {
-                vertices[i] = new Vector3(x, 0f, z);
+                vertices[i] = new Vector3(x, GetYValue(x, z), z);
                 i++;
             }
         }
+    }
+
+    private float GetYValue(int indexOfX, int indexOfZ)
+    {
+        if (HexagonTerrain.HexagonTerrainXStart <= indexOfX && HexagonTerrain.HexagonTerrainXEnd >= indexOfX && HexagonTerrain.HexagonTerrainZStart <= indexOfZ && HexagonTerrain.HexagonTerrainZEnd >= indexOfZ) return 0f;
+        return perlinNoise.GetPerlinNoiseValue(indexOfX, indexOfZ);
     }
 
     private void UpdateTrianglesPoints()
@@ -144,8 +152,8 @@ public class GridSystemV3_2 : MonoBehaviour
         hexagonTileSetting.SetTileType(HexagonTerrain.GetHexagonTileType());
         hexagonTileSetting.UpdateTileType();
 
-        float x = xPos + HexagonTerrain.HexagonTileXOffset;
-        float z = zPos + HexagonTerrain.HexagonTileZOffset - ((zPos - HexagonTerrain.HexagonTerrainZStart) * HexagonTerrain.HexagonTileZSpaceCorrection);
+        float x = xPos;
+        float z = zPos - ((zPos - HexagonTerrain.HexagonTerrainZStart) * HexagonTerrain.HexagonTileZSpaceCorrection);
 
         if (zPos % 2 == 1) x += HexagonTerrain.HexagonTileXOddOffset;
 

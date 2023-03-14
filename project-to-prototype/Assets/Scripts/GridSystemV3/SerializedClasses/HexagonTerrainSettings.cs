@@ -21,16 +21,12 @@ public class HexagonTerrainSettings
     private List<int> hexagonTilePool;
 
     [Header("Hexagon tile offset")]
-    public float HexagonTileXOffset = 0.5f;
-    public float HexagonTileZOffset = -0.1f;
     public float HexagonTileXSpaceCorrection = 0f;
     public float HexagonTileZSpaceCorrection = 0f;
     public float HexagonTileXOddOffset = 0.5f;
 
     private int previousHexTerrainXLength;
     private int previousHexTerrainZLength;
-    private float previousHexagonTileXOffset;
-    private float previousHexagonTileZOffset;
     private float previousHexagonTileXSpaceCorrection;
     private float previousHexagonTileZSpaceCorrection;
     private float previousHexagonTileXOddOffset;
@@ -40,8 +36,6 @@ public class HexagonTerrainSettings
     {
         previousHexTerrainXLength = HexagonTerrainXLength;
         previousHexTerrainZLength = HexagonTerrainZLength;
-        previousHexagonTileXOffset = HexagonTileXOffset;
-        previousHexagonTileZOffset = HexagonTileZOffset;
         previousHexagonTileXSpaceCorrection = HexagonTileXSpaceCorrection;
         previousHexagonTileZSpaceCorrection = HexagonTileZSpaceCorrection;
         previousHexagonTileXOddOffset = HexagonTileXOddOffset;
@@ -49,15 +43,12 @@ public class HexagonTerrainSettings
 
     public bool HasValueChanged()
     {
-        if (previousHexTerrainXLength == HexagonTerrainXLength && previousHexTerrainZLength == HexagonTerrainZLength && 
-            previousHexagonTileXOffset == HexagonTileXOffset && previousHexagonTileZOffset == HexagonTileZOffset &&
+        if (previousHexTerrainXLength == HexagonTerrainXLength && previousHexTerrainZLength == HexagonTerrainZLength &&
             previousHexagonTileXSpaceCorrection == HexagonTileXSpaceCorrection && previousHexagonTileZSpaceCorrection == HexagonTileZSpaceCorrection &&
             previousHexagonTileXOddOffset == HexagonTileXOddOffset) return false;
 
         previousHexTerrainXLength = HexagonTerrainXLength;
         previousHexTerrainZLength = HexagonTerrainZLength;
-        previousHexagonTileXOffset = HexagonTileXOffset;
-        previousHexagonTileZOffset = HexagonTileZOffset;
         previousHexagonTileXSpaceCorrection = HexagonTileXSpaceCorrection;
         previousHexagonTileZSpaceCorrection = HexagonTileZSpaceCorrection;
         previousHexagonTileXOddOffset = HexagonTileXOddOffset;
