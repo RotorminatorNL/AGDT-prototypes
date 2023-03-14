@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93c34597006d5f3408db712bd66beb01, type: 3}
   m_Name: TileTypes
   m_EditorClassIdentifier: 
-  TileTypes:
-  - TileName: Parent
-    TilePrefab: {fileID: 1692578891167136568, guid: 9f6c4504d2d39354cbff663779335f71, type: 3}
-  - TileName: Grass
-    TilePrefab: {fileID: 1034398648363416, guid: 724d1dba07b41c34282d4078db00274d, type: 3}
-  - TileName: Water
-    TilePrefab: {fileID: 1209033865668100, guid: ba18ad1c2b7e68644b186f04055c20f2, type: 3}
+  Types:
+  - Name: Parent
+    Prefab: {fileID: 1692578891167136568, guid: 9f6c4504d2d39354cbff663779335f71, type: 3}
+  - Name: Grass
+    Prefab: {fileID: 1034398648363416, guid: 724d1dba07b41c34282d4078db00274d, type: 3}
+  - Name: Water
+    Prefab: {fileID: 1209033865668100, guid: ba18ad1c2b7e68644b186f04055c20f2, type: 3}

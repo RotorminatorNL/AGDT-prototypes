@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "TileTypes", menuName = "Tile/Tile types")]
-public class HexTileTypes : ScriptableObject
+public class HexagonTileTypes : ScriptableObject
 {
-    public List<Tile> TileTypes = new List<Tile>();
+    public List<HexagonTileType> Types = new List<HexagonTileType>();
 }

@@ -16,14 +16,14 @@ public class GridSystemV3 : MonoBehaviour
 
     // I know yikes, but it needs to be like this for now.
 
-    public HexTileTypes HexTileTypes { get { return hexTileTypes; } }
+    public HexagonTileTypes HexTileTypes { get { return hexTileTypes; } }
     [Header("Temporary")]
-    [SerializeField] private HexTileTypes hexTileTypes;
-    public List<TileGenerationChance> Tiles = new List<TileGenerationChance>();
+    [SerializeField] private HexagonTileTypes hexTileTypes;
+    public List<HexagonTileTypeChance> Tiles = new List<HexagonTileTypeChance>();
     private List<int> tilePool;
-    [SerializeField] private float hexXOffset = 0f;
-    [SerializeField] private float hexZOffset = 0f;
-    [SerializeField] private float hexZCorrectionOffset = 0f;
+    [SerializeField] private float hexXOffset = 0.5f;
+    [SerializeField] private float hexZOffset = -0.1f;
+    [SerializeField] private float hexZCorrectionOffset = -0.135f;
     [SerializeField] private float hexXOddOffset = 0.5f;
 
     // I am serious I hate this too, so lit it be for now.
@@ -35,14 +35,14 @@ public class GridSystemV3 : MonoBehaviour
     [SerializeField] private PerlinNoiseSettings perlinNoiseSettings;
 
     [Space(10)]
-    [SerializeField] private HexTerrainSettings hexTerrainSettings;
+    [SerializeField] private HexagonTerrainSettings hexTerrainSettings;
 
     [Space(10)]
     [SerializeField] private TransitionSettings transitionSettings;
 
     private void Update()
     {
-        if (gridSettings.GridXLength <= 0 || gridSettings.GridZLength <= 0 || hexTerrainSettings.HexTerrainXLength <= 0 || hexTerrainSettings.HexTerrainZLength <= 0 || transitionSettings.TransitionLength <= 0) return;
+        if (gridSettings.GridXLength <= 0 || gridSettings.GridZLength <= 0 || hexTerrainSettings.HexagonTerrainXLength <= 0 || hexTerrainSettings.HexagonTerrainZLength <= 0 || transitionSettings.TransitionLength <= 0) return;
 
         if (generatorActive)
         {
@@ -76,8 +76,8 @@ public class GridSystemV3 : MonoBehaviour
         GetComponent<MeshFilter>().mesh = mesh;
 
         hexTerrainSettings.CalculateHexTerrainBounds(gridSettings);
-        transitionSettings.SetTransitionPercentages(hexTerrainSettings.HexTerrainXStart, hexTerrainSettings.HexTerrainXEnd, hexTerrainSettings.HexTerrainXLength, "X");
-        transitionSettings.SetTransitionPercentages(hexTerrainSettings.HexTerrainZStart, hexTerrainSettings.HexTerrainZEnd, hexTerrainSettings.HexTerrainZLength, "Z");
+        transitionSettings.SetTransitionPercentages(hexTerrainSettings.HexagonTerrainXStart, hexTerrainSettings.HexagonTerrainXEnd, hexTerrainSettings.HexagonTerrainXLength, "X");
+        transitionSettings.SetTransitionPercentages(hexTerrainSettings.HexagonTerrainZStart, hexTerrainSettings.HexagonTerrainZEnd, hexTerrainSettings.HexagonTerrainZLength, "Z");
 
         UpdateVertices();
         UpdateTrianglesPoints();
@@ -102,20 +102,20 @@ public class GridSystemV3 : MonoBehaviour
 
     private float GetYValue(int indexOfX, int indexOfZ)
     {
-        if (hexTerrainSettings.HexTerrainXStart <= indexOfX && hexTerrainSettings.HexTerrainXEnd >= indexOfX && hexTerrainSettings.HexTerrainZStart <= indexOfZ && hexTerrainSettings.HexTerrainZEnd >= indexOfZ) return 0f;
+        if (hexTerrainSettings.HexagonTerrainXStart <= indexOfX && hexTerrainSettings.HexagonTerrainXEnd >= indexOfX && hexTerrainSettings.HexagonTerrainZStart <= indexOfZ && hexTerrainSettings.HexagonTerrainZEnd >= indexOfZ) return 0f;
         return perlinNoiseSettings.GetPerlinNoiseValue(indexOfX, indexOfZ) * GetTransitionPercentage(indexOfX, indexOfZ);
     }
 
     private float GetTransitionPercentage(int indexOfX, int indexOfZ)
     {
-        if (transitionSettings.TransitionXVertices.ContainsKey(indexOfX) && hexTerrainSettings.HexTerrainZStart <= indexOfZ && hexTerrainSettings.HexTerrainZEnd >= indexOfZ) return transitionSettings.TransitionXVertices[indexOfX];
-        else if (transitionSettings.TransitionZVertices.ContainsKey(indexOfZ) && hexTerrainSettings.HexTerrainXStart <= indexOfX && hexTerrainSettings.HexTerrainXEnd >= indexOfX) return transitionSettings.TransitionZVertices[indexOfZ];
+        if (transitionSettings.TransitionXVertices.ContainsKey(indexOfX) && hexTerrainSettings.HexagonTerrainZStart <= indexOfZ && hexTerrainSettings.HexagonTerrainZEnd >= indexOfZ) return transitionSettings.TransitionXVertices[indexOfX];
+        else if (transitionSettings.TransitionZVertices.ContainsKey(indexOfZ) && hexTerrainSettings.HexagonTerrainXStart <= indexOfX && hexTerrainSettings.HexagonTerrainXEnd >= indexOfX) return transitionSettings.TransitionZVertices[indexOfZ];
         else if (transitionSettings.TransitionXVertices.ContainsKey(indexOfX) && transitionSettings.TransitionZVertices.ContainsKey(indexOfZ))
         {
-            if (indexOfX <= hexTerrainSettings.HexTerrainXStart && indexOfZ <= hexTerrainSettings.HexTerrainZStart) return (indexOfX - hexTerrainSettings.HexTerrainXStart) <= (indexOfZ - hexTerrainSettings.HexTerrainZStart) ? transitionSettings.TransitionXVertices[indexOfX] : transitionSettings.TransitionZVertices[indexOfZ];
-            else if (indexOfX >= hexTerrainSettings.HexTerrainXEnd && indexOfZ <= hexTerrainSettings.HexTerrainZStart) return (indexOfX - hexTerrainSettings.HexTerrainXEnd) >= (hexTerrainSettings.HexTerrainZStart - indexOfZ) ? transitionSettings.TransitionXVertices[indexOfX] : transitionSettings.TransitionZVertices[indexOfZ];
-            else if (indexOfX <= hexTerrainSettings.HexTerrainXStart && indexOfZ >= hexTerrainSettings.HexTerrainZEnd) return (hexTerrainSettings.HexTerrainXStart - indexOfX) >= (indexOfZ - hexTerrainSettings.HexTerrainZEnd) ? transitionSettings.TransitionXVertices[indexOfX] : transitionSettings.TransitionZVertices[indexOfZ];
-            else return (indexOfX - hexTerrainSettings.HexTerrainXEnd) >= (indexOfZ - hexTerrainSettings.HexTerrainZEnd) ? transitionSettings.TransitionXVertices[indexOfX] : transitionSettings.TransitionZVertices[indexOfZ];
+            if (indexOfX <= hexTerrainSettings.HexagonTerrainXStart && indexOfZ <= hexTerrainSettings.HexagonTerrainZStart) return (indexOfX - hexTerrainSettings.HexagonTerrainXStart) <= (indexOfZ - hexTerrainSettings.HexagonTerrainZStart) ? transitionSettings.TransitionXVertices[indexOfX] : transitionSettings.TransitionZVertices[indexOfZ];
+            else if (indexOfX >= hexTerrainSettings.HexagonTerrainXEnd && indexOfZ <= hexTerrainSettings.HexagonTerrainZStart) return (indexOfX - hexTerrainSettings.HexagonTerrainXEnd) >= (hexTerrainSettings.HexagonTerrainZStart - indexOfZ) ? transitionSettings.TransitionXVertices[indexOfX] : transitionSettings.TransitionZVertices[indexOfZ];
+            else if (indexOfX <= hexTerrainSettings.HexagonTerrainXStart && indexOfZ >= hexTerrainSettings.HexagonTerrainZEnd) return (hexTerrainSettings.HexagonTerrainXStart - indexOfX) >= (indexOfZ - hexTerrainSettings.HexagonTerrainZEnd) ? transitionSettings.TransitionXVertices[indexOfX] : transitionSettings.TransitionZVertices[indexOfZ];
+            else return (indexOfX - hexTerrainSettings.HexagonTerrainXEnd) >= (indexOfZ - hexTerrainSettings.HexagonTerrainZEnd) ? transitionSettings.TransitionXVertices[indexOfX] : transitionSettings.TransitionZVertices[indexOfZ];
         }
 
         return 1;
@@ -133,8 +133,8 @@ public class GridSystemV3 : MonoBehaviour
             for (int x = 0; x < gridSettings.GridXLength; x++)
             {
                 Vector3 currentVertice = vertices[currentVert];
-                if (currentVertice.x >= hexTerrainSettings.HexTerrainXStart && currentVertice.x <= hexTerrainSettings.HexTerrainXEnd - 1 &&
-                    currentVertice.z >= hexTerrainSettings.HexTerrainZStart && currentVertice.z <= hexTerrainSettings.HexTerrainZEnd - 1 &&
+                if (currentVertice.x >= hexTerrainSettings.HexagonTerrainXStart && currentVertice.x <= hexTerrainSettings.HexagonTerrainXEnd - 1 &&
+                    currentVertice.z >= hexTerrainSettings.HexagonTerrainZStart && currentVertice.z <= hexTerrainSettings.HexagonTerrainZEnd - 1 &&
                    currentVertice.y == 0f)
                 {
                     // skip 'm
@@ -171,9 +171,9 @@ public class GridSystemV3 : MonoBehaviour
         CreateTilePool();
         ClearHexTiles();
 
-        for (int z = hexTerrainSettings.HexTerrainZStart; z < hexTerrainSettings.HexTerrainZEnd; z++)
+        for (int z = hexTerrainSettings.HexagonTerrainZStart; z < hexTerrainSettings.HexagonTerrainZEnd; z++)
         {
-            for (int x = hexTerrainSettings.HexTerrainXStart; x < hexTerrainSettings.HexTerrainXEnd; x++)
+            for (int x = hexTerrainSettings.HexagonTerrainXStart; x < hexTerrainSettings.HexagonTerrainXEnd; x++)
             {
                 GenerateHexTile(x, z);
             }
@@ -182,16 +182,17 @@ public class GridSystemV3 : MonoBehaviour
 
     private void CreateTilePool()
     {
-        Tiles[0].TileChance = 0;
+        Tiles[0].Chance = 0;
         tilePool = new List<int>();
         for (int i = 0; i < Tiles.Count; i++)
         {
-            for (int j = 0; j < (Tiles[i].TileChance * 10); j++)
+            for (int j = 0; j < (Tiles[i].Chance * 10); j++)
             {
                 tilePool.Add(i);
             }
         }
     }
+
     public void ClearHexTiles()
     {
         for (int i = transform.childCount - 1; i >= 0; i--)
@@ -203,14 +204,14 @@ public class GridSystemV3 : MonoBehaviour
     private void GenerateHexTile(int xPos, int zPos)
     {
         if (hexTileTypes == null) return;
-        GameObject hexPrefab = hexTileTypes.TileTypes[0].TilePrefab;
+        GameObject hexPrefab = hexTileTypes.Types[0].Prefab;
         GameObject hex = Instantiate(hexPrefab, new Vector3(0, 0, 0), Quaternion.identity, transform);
 
-        hex.GetComponent<HexTileSettings>().SetTileType(GetTileType());
-        hex.GetComponent<HexTileSettings>().UpdateTileType();
+        hex.GetComponent<HexagonTileSettings>().SetTileType(GetTileType());
+        hex.GetComponent<HexagonTileSettings>().UpdateTileType();
 
         float x = xPos + hexXOffset;
-        float z = zPos + hexZOffset + ((zPos - hexTerrainSettings.HexTerrainZLength) * hexZCorrectionOffset);
+        float z = zPos + hexZOffset + ((zPos - hexTerrainSettings.HexagonTerrainZLength) * hexZCorrectionOffset);
 
         if (zPos % 2 == 1) x += hexXOddOffset;
 

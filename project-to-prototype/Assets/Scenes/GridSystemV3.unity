@@ -123,113 +123,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &142243979
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 142243983}
-  - component: {fileID: 142243982}
-  - component: {fileID: 142243981}
-  - component: {fileID: 142243980}
-  m_Layer: 0
-  m_Name: GridSystemV3_1
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!23 &142243980
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 142243979}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
-  m_RayTraceProcedural: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: af2f816b7722eb44981a8232eb0dc817, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_AdditionalVertexStreams: {fileID: 0}
---- !u!33 &142243981
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 142243979}
-  m_Mesh: {fileID: 0}
---- !u!114 &142243982
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 142243979}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3999729dd73938c4689b2bbc1d1fba96, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  grid:
-    GridXLength: 100
-    GridZLength: 80
-  perlinNoise:
-    Offset: {x: 0, y: 0}
-    Seed: 0
-    NoiseScale: 0.0001
-    Octaves: 1
-    Persistence: 0
-    Lacunarity: 1
-  heightScale: 1
---- !u!4 &142243983
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 142243979}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 30.535368, y: 16.27545, z: -7.3128834}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &616009831
 GameObject:
   m_ObjectHideFlags: 0
@@ -345,7 +238,7 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
---- !u!1 &1272057441
+--- !u!1 &1655095221
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -353,64 +246,24 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1272057445}
-  - component: {fileID: 1272057442}
-  - component: {fileID: 1272057444}
-  - component: {fileID: 1272057443}
+  - component: {fileID: 1655095225}
+  - component: {fileID: 1655095224}
+  - component: {fileID: 1655095223}
+  - component: {fileID: 1655095222}
   m_Layer: 0
-  m_Name: GridSystemV3
+  m_Name: GridSystemV3_2
   m_TagString: Untagged
-  m_Icon: {fileID: 7250588514170254948, guid: 0000000000000000d000000000000000, type: 0}
+  m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1272057442
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1272057441}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 720e6942e3c7b8a4c936bdf322c4d456, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  generatorActive: 1
-  hexTileTypes: {fileID: 11400000, guid: 2773c7768717a934ca5c12cd97897adb, type: 2}
-  Tiles:
-  - TileName: Parent
-    TileChance: 0
-  - TileName: Grass
-    TileChance: 1
-  - TileName: Water
-    TileChance: 1
-  hexXOffset: 0.5
-  hexZOffset: -0.1
-  hexZCorrectionOffset: -0.135
-  hexXOddOffset: 0.5
-  gridSettings:
-    GridXLength: 100
-    GridZLength: 80
-  perlinNoiseSettings:
-    PerlinNoiseXCoordOffset: 0
-    PerlinNoiseXScale: 0.05
-    PerlinNoiseZCoordOffset: 0
-    PerlinNoiseZScale: 0.05
-    PerlinNoiseYScale: 10
-  hexTerrainSettings:
-    HexTerrainXLength: 50
-    HexTerrainZLength: 30
-  transitionSettings:
-    TransitionLength: 10
-    TransitionCurve: 1.5
---- !u!23 &1272057443
+--- !u!23 &1655095222
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1272057441}
+  m_GameObject: {fileID: 1655095221}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -446,22 +299,53 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!33 &1272057444
+--- !u!33 &1655095223
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1272057441}
+  m_GameObject: {fileID: 1655095221}
   m_Mesh: {fileID: 0}
---- !u!4 &1272057445
+--- !u!114 &1655095224
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1655095221}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40515362c04ddad4ea65df9c35d6ad40, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  grid:
+    GridXLength: 100
+    GridZLength: 80
+  HexagonTerrain:
+    HexagonTerrainXLength: 50
+    HexagonTerrainZLength: 30
+    hexagonTileTypes: {fileID: 11400000, guid: 2773c7768717a934ca5c12cd97897adb, type: 2}
+    HexagonTiles:
+    - Name: Parent
+      Chance: 1
+    - Name: Grass
+      Chance: 1
+    - Name: Water
+      Chance: 1
+    HexagonTileXOffset: 0
+    HexagonTileZOffset: 0
+    HexagonTileXSpaceCorrection: 0
+    HexagonTileZSpaceCorrection: 0.135
+    HexagonTileXOddOffset: 0.5
+--- !u!4 &1655095225
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1272057441}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_GameObject: {fileID: 1655095221}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0

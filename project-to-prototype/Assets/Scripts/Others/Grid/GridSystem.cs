@@ -7,11 +7,11 @@ using UnityEngine.WSA;
 [ExecuteInEditMode]
 public class GridSystem : MonoBehaviour
 {
-    public HexTileTypes HexTileTypes { get { return hexTileTypes; } }
+    public HexagonTileTypes HexTileTypes { get { return hexTileTypes; } }
 
     [Header("Grid tile types")]
-    [SerializeField] private HexTileTypes hexTileTypes;
-    public List<TileGenerationChance> Tiles = new List<TileGenerationChance>();
+    [SerializeField] private HexagonTileTypes hexTileTypes;
+    public List<HexagonTileTypeChance> Tiles = new List<HexagonTileTypeChance>();
 
     [Header("Grid size")]
     [SerializeField] private int gridHeight = 10;
@@ -46,11 +46,11 @@ public class GridSystem : MonoBehaviour
 
     private void CreateTilePool()
     {
-        Tiles[0].TileChance = 0;
+        Tiles[0].Chance = 0;
         tilePool = new List<int>();
         for (int i = 0; i < Tiles.Count; i++)
         {
-            for (int j = 0; j < (Tiles[i].TileChance * 10); j++)
+            for (int j = 0; j < (Tiles[i].Chance * 10); j++)
             {
                 tilePool.Add(i);
             }
@@ -60,11 +60,11 @@ public class GridSystem : MonoBehaviour
     private void GenerateHexTile(int xPos, int zPos)
     {
         if (hexTileTypes == null) return;
-        GameObject hexPrefab = hexTileTypes.TileTypes[0].TilePrefab;
+        GameObject hexPrefab = hexTileTypes.Types[0].Prefab;
         GameObject hex = Instantiate(hexPrefab, new Vector3(0, 0, 0), Quaternion.identity, transform);
 
-        hex.GetComponent<HexTileSettings>().SetTileType(GetTileType(xPos, zPos));
-        hex.GetComponent<HexTileSettings>().UpdateTileType();
+        hex.GetComponent<HexagonTileSettings>().SetTileType(GetTileType(xPos, zPos));
+        hex.GetComponent<HexagonTileSettings>().UpdateTileType();
 
         float hexWidth = hex.transform.GetChild(0).GetComponent<Renderer>().bounds.size.x;
         float hexHeight = hex.transform.GetChild(0).GetComponent<Renderer>().bounds.size.z;

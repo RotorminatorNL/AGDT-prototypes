@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
-public class Tile
+public class HexagonTileType
 {
-    public string TileName;
-    public GameObject TilePrefab;
+    public string Name;
+    public GameObject Prefab;
 }

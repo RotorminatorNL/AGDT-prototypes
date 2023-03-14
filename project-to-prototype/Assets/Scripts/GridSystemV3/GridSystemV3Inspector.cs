@@ -14,18 +14,18 @@ public class GridSystemV3Inspector : Editor
 
         if (gridSystem.HexTileTypes == null)
         {
-            gridSystem.Tiles = new List<TileGenerationChance>();
+            gridSystem.Tiles = new List<HexagonTileTypeChance>();
         }
         else
         {
-            List<Tile> newTiles = gridSystem.HexTileTypes.TileTypes;
+            List<HexagonTileType> newTiles = gridSystem.HexTileTypes.Types;
 
             if (IsTileListUpdated(gridSystem.Tiles, newTiles))
             {
-                gridSystem.Tiles = new List<TileGenerationChance>();
-                foreach (Tile tile in newTiles)
+                gridSystem.Tiles = new List<HexagonTileTypeChance>();
+                foreach (HexagonTileType tile in newTiles)
                 {
-                    gridSystem.Tiles.Add(new TileGenerationChance(tile.TileName));
+                    gridSystem.Tiles.Add(new HexagonTileTypeChance(tile.Name));
                 }
             }
         }
@@ -33,7 +33,7 @@ public class GridSystemV3Inspector : Editor
         if (GUILayout.Button("Forced generation")) gridSystem.GenerateGrid();
     }
 
-    private bool IsTileListUpdated(List<TileGenerationChance> oldTiles, List<Tile> newTiles)
+    private bool IsTileListUpdated(List<HexagonTileTypeChance> oldTiles, List<HexagonTileType> newTiles)
     {
         if (oldTiles.Count != newTiles.Count)
             return true;

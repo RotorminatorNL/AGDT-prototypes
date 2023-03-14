@@ -13,18 +13,18 @@ public class GridSystemInspectorButton : Editor
 
         if (gridSystem.HexTileTypes == null)
         {
-            gridSystem.Tiles = new List<TileGenerationChance>();
+            gridSystem.Tiles = new List<HexagonTileTypeChance>();
         }
         else
         {
-            List<Tile> newTiles = gridSystem.HexTileTypes.TileTypes;
+            List<HexagonTileType> newTiles = gridSystem.HexTileTypes.Types;
 
             if (IsShownTileListtUpToDate(gridSystem.Tiles, newTiles))
             {
-                gridSystem.Tiles = new List<TileGenerationChance>();
-                foreach (Tile tile in newTiles)
+                gridSystem.Tiles = new List<HexagonTileTypeChance>();
+                foreach (HexagonTileType tile in newTiles)
                 {
-                    gridSystem.Tiles.Add(new TileGenerationChance(tile.TileName));
+                    gridSystem.Tiles.Add(new HexagonTileTypeChance(tile.Name));
                 }
             }
         }
@@ -33,7 +33,7 @@ public class GridSystemInspectorButton : Editor
         if (GUILayout.Button("Clear grid")) gridSystem.ClearHexGrid();
     }
 
-    private bool IsShownTileListtUpToDate(List<TileGenerationChance> shownTiles, List<Tile> newTiles)
+    private bool IsShownTileListtUpToDate(List<HexagonTileTypeChance> shownTiles, List<HexagonTileType> newTiles)
     {
         if (shownTiles.Count != newTiles.Count)
             return true;
