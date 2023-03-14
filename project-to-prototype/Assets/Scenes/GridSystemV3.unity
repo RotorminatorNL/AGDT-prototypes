@@ -319,10 +319,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40515362c04ddad4ea65df9c35d6ad40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  grid:
+  gridSettings:
     GridXLength: 100
     GridZLength: 80
-  HexagonTerrain:
+  perlinNoiseSettings:
+    PerlinNoiseXCoordOffset: 0
+    PerlinNoiseXScale: 0.05
+    PerlinNoiseZCoordOffset: 0
+    PerlinNoiseZScale: 0.05
+    PerlinNoiseYScale: 10
+  transitionSettings:
+    TransitionLength: 10
+    TransitionCurve: 1
+  HexagonTerrainSettings:
     HexagonTerrainXLength: 50
     HexagonTerrainZLength: 30
     hexagonTileTypes: {fileID: 11400000, guid: 2773c7768717a934ca5c12cd97897adb, type: 2}
@@ -333,10 +342,8 @@ MonoBehaviour:
       Chance: 1
     - Name: Water
       Chance: 1
-    HexagonTileXOffset: 0
-    HexagonTileZOffset: 0
     HexagonTileXSpaceCorrection: 0
-    HexagonTileZSpaceCorrection: 0.135
+    HexagonTileZSpaceCorrection: 0.134
     HexagonTileXOddOffset: 0.5
 --- !u!4 &1655095225
 Transform:

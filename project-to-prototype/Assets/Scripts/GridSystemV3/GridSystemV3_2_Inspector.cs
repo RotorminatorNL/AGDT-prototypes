@@ -12,18 +12,18 @@ public class GridSystemV3_2_Inspector : Editor
 
         GridSystemV3_2 gridSystem = (GridSystemV3_2)target;
 
-        if (gridSystem.HexagonTerrain.HexagonTileTypes == null)
+        if (gridSystem.HexagonTerrainSettings.HexagonTileTypes == null)
         {
-            gridSystem.HexagonTerrain.HexagonTiles = new List<HexagonTileTypeChance>();
+            gridSystem.HexagonTerrainSettings.HexagonTiles = new List<HexagonTileTypeChance>();
         }
         else
         {
-            List<HexagonTileType> newTiles = gridSystem.HexagonTerrain.HexagonTileTypes.Types;
+            List<HexagonTileType> newTiles = gridSystem.HexagonTerrainSettings.HexagonTileTypes.Types;
 
-            if (IsTileListUpdated(gridSystem.HexagonTerrain.HexagonTiles, newTiles))
+            if (IsTileListUpdated(gridSystem.HexagonTerrainSettings.HexagonTiles, newTiles))
             {
-                gridSystem.HexagonTerrain.HexagonTiles = new List<HexagonTileTypeChance>();
-                foreach (HexagonTileType tile in newTiles) gridSystem.HexagonTerrain.HexagonTiles.Add(new HexagonTileTypeChance(tile.Name));
+                gridSystem.HexagonTerrainSettings.HexagonTiles = new List<HexagonTileTypeChance>();
+                foreach (HexagonTileType tile in newTiles) gridSystem.HexagonTerrainSettings.HexagonTiles.Add(new HexagonTileTypeChance(tile.Name));
             }
         }
     }
