@@ -99,10 +99,7 @@ public class GridSystemV3_2 : MonoBehaviour
                 Vector3 currentVertice = vertices[currentVert];
                 if (currentVertice.x >= HexagonTerrainSettings.HexagonTerrainXStart && currentVertice.x <= HexagonTerrainSettings.HexagonTerrainXEnd - 1 &&
                     currentVertice.z >= HexagonTerrainSettings.HexagonTerrainZStart && currentVertice.z <= HexagonTerrainSettings.HexagonTerrainZEnd - 1 &&
-                   currentVertice.y == 0f)
-                {
-                    // skip 'm
-                }
+                    currentVertice.y == 0f) { /* Skip these vertices */ }
                 else
                 {
                     allTrianglePoints[currentSquare * 6 + 0] = currentVert + 0;
