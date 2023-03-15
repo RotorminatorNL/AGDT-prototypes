@@ -26,6 +26,10 @@ public class GridSystemV3_2_Inspector : Editor
                 foreach (HexagonTileType tile in newTiles) gridSystem.HexagonTerrainSettings.HexagonTiles.Add(new HexagonTileTypeChance(tile.Name));
             }
         }
+
+        if (GUILayout.Button("(Re)Generate grid")) gridSystem.GenerateGrid();
+        if (GUILayout.Button("Clear grid")) gridSystem.ClearGrid();
+
     }
 
     private bool IsTileListUpdated(List<HexagonTileTypeChance> oldTiles, List<HexagonTileType> newTiles)

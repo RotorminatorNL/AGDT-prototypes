@@ -10,24 +10,6 @@ public class TransitionSettings
     [HideInInspector] public Dictionary<int, float> TransitionXVertices;
     [HideInInspector] public Dictionary<int, float> TransitionZVertices;
 
-    private int previousTransitionLength;
-    private float previousTransitionCurve;
-
-    public void UpdateValues()
-    {
-        previousTransitionLength = TransitionLength;
-        previousTransitionCurve = TransitionCurve;
-    }
-
-    public bool HasValueChanged()
-    {
-        if (previousTransitionLength == TransitionLength && previousTransitionCurve == TransitionCurve) return false;
-
-        previousTransitionLength = TransitionLength;
-        previousTransitionCurve = TransitionCurve;
-        return true;
-    }
-
     public void SetTransitionPercentages(int innerGridStart, int innerGridEnd, int innerGridLength, string axis = "X")
     {
         Dictionary<int, float> transitionVertices = new Dictionary<int, float>();

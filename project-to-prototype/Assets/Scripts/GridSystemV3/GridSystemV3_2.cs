@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class GridSystemV3_2 : MonoBehaviour
 {
-    private bool firstGeneration = true;
-
     private Mesh mesh;
     private Vector3[] vertices;
     private int[] allTrianglePoints;
@@ -15,37 +13,11 @@ public class GridSystemV3_2 : MonoBehaviour
     [SerializeField] private TransitionSettings transitionSettings;
     public HexagonTerrainSettings HexagonTerrainSettings;
 
-    private void Update()
+    public void GenerateGrid()
     {
-        bool gridSizeWrong = gridSettings.GridXLength <= 0 || gridSettings.GridZLength <= 0;
-        bool hexagonTerrainWrong = HexagonTerrainSettings.HexagonTerrainXLength <= 0 || HexagonTerrainSettings.HexagonTerrainZLength <= 0;
-        if (gridSizeWrong || hexagonTerrainWrong || transitionSettings.TransitionLength <= 0) return;
+        if (!AbleToGenerate()) return;
 
-        if (firstGeneration)
-        {
-            gridSettings.UpdateValues();
-            perlinNoiseSettings.UpdateValues();
-            transitionSettings.UpdateValues();
-            HexagonTerrainSettings.UpdateValues();
-
-            GenerateGrid();
-            firstGeneration = false;
-        }
-
-        if (!firstGeneration && ValueChanged()) GenerateGrid();
-    }
-
-    private bool ValueChanged()
-    {
-        if (gridSettings.HasValueChanged() || perlinNoiseSettings.HasValueChanged() || transitionSettings.HasValueChanged() || HexagonTerrainSettings.HasValueChanged()) return true;
-        return false;
-    }
-
-    private void GenerateGrid()
-    {
-        mesh = new Mesh();
-        mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
-        GetComponent<MeshFilter>().mesh = mesh;
+        ClearGrid();
 
         HexagonTerrainSettings.CalculateHexTerrainBounds(gridSettings);
         transitionSettings.SetTransitionPercentages(HexagonTerrainSettings.HexagonTerrainXStart, HexagonTerrainSettings.HexagonTerrainXEnd, HexagonTerrainSettings.HexagonTerrainXLength, "X");
@@ -56,6 +28,26 @@ public class GridSystemV3_2 : MonoBehaviour
         UpdateMesh();
 
         GenerateHexagonTerrain();
+    }
+
+    private bool AbleToGenerate()
+    {
+        bool gridSizeWrong = gridSettings.GridXLength <= 0 || gridSettings.GridZLength <= 0;
+        bool hexagonTerrainWrong = HexagonTerrainSettings.HexagonTerrainXLength <= 0 || HexagonTerrainSettings.HexagonTerrainZLength <= 0;
+        if (gridSizeWrong || hexagonTerrainWrong || transitionSettings.TransitionLength <= 0) return false;
+        return true;
+    }
+
+    public void ClearGrid()
+    {
+        mesh = new Mesh();
+        mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+        GetComponent<MeshFilter>().mesh = mesh;
+
+        for (int i = transform.childCount - 1; i >= 0; i--)
+        {
+            DestroyImmediate(transform.GetChild(i).gameObject);
+        }
     }
 
     private void UpdateVertices()
@@ -140,7 +132,6 @@ public class GridSystemV3_2 : MonoBehaviour
 
     private void GenerateHexagonTerrain()
     {
-        ClearHexagonTerrain();
         HexagonTerrainSettings.CreateHexagonTilePool();
 
         int newHexagonTerrainZLength = HexagonTerrainSettings.HexagonTerrainZEnd + Mathf.CeilToInt(HexagonTerrainSettings.HexagonTerrainZLength * HexagonTerrainSettings.HexagonTileZSpaceCorrection) + 1;
@@ -151,14 +142,6 @@ public class GridSystemV3_2 : MonoBehaviour
             {
                 InstantiateHexagon(x, z);
             }
-        }
-    }
-
-    private void ClearHexagonTerrain()
-    {
-        for (int i = transform.childCount - 1; i >= 0; i--)
-        {
-            DestroyImmediate(transform.GetChild(i).gameObject);
         }
     }
 
