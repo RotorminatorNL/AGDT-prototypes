@@ -36,6 +36,7 @@ public class HexagonTerrainSettings
 
     public void CreateHexagonTilePool()
     {
+        if (hexagonTileTypes == null) return;
         HexagonTiles[0].Chance = 0;
         hexagonTilePool = new List<int>();
         for (int i = 0; i < HexagonTiles.Count; i++)

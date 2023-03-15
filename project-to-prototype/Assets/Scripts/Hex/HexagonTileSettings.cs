@@ -14,7 +14,7 @@ public class HexagonTileSettings : MonoBehaviour
 
     private void Update()
     {
-        if ((previousTileTypeIndex == selectedTileTypeIndex || hasSpawned) && TileTypes != null) return;
+        if ((previousTileTypeIndex == selectedTileTypeIndex || hasSpawned) && TileTypes == null) return;
         UpdateTileType();
         previousTileTypeIndex = selectedTileTypeIndex;
     }
