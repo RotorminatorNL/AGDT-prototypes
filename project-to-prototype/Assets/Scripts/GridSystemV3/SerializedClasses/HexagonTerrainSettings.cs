@@ -22,7 +22,7 @@ public class HexagonTerrainSettings
 
     [Header("Hexagon tile offset")]
     public float HexagonTileXSpaceCorrection = 0f;
-    public float HexagonTileZSpaceCorrection = 0f;
+    public float HexagonTileZSpaceCorrection = 0.134f;
     public float HexagonTileXOddOffset = 0.5f;
 
     public void CalculateHexTerrainBounds(GridSettings grid)
