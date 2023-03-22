@@ -12,8 +12,10 @@ public class HexagonTileSettingsInspector : Editor
     {
         DrawDefaultInspector();
         HexagonTileSettings hexagonTileSettings = (HexagonTileSettings)target;
+        HexagonTileTypes tileTypes = hexagonTileSettings.transform.parent.GetComponent<GridSystemV3_2>().TileTypes;
 
-        if (hexagonTileSettings.TileTypes == null) return;
+        if (tileTypes == null) return;
+        hexagonTileSettings.TileTypes = tileTypes;
         string[] hexagonTiles = hexagonTileSettings.TileTypes.Types.Select(i => i.Name).ToArray();
         hexagonTileSettings.SelectedTileTypeIndex = EditorGUILayout.Popup("Hexagon tiles", hexagonTileSettings.SelectedTileTypeIndex, hexagonTiles);
     }
