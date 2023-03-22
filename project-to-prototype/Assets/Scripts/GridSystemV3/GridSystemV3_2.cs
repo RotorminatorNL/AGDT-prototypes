@@ -13,7 +13,7 @@ public class GridSystemV3_2 : MonoBehaviour
 
     [SerializeField] private OuterGridSettings outerGrid;
     [SerializeField] private PerlinNoiseSettings perlinNoiseSettings;
-    //[SerializeField] private TransitionSettings transitionSettings;
+    [SerializeField] private TransitionSettings transitionSettings;
     public InnerGridSettings innerGrid;
 
     public void GenerateGrid()
@@ -73,9 +73,15 @@ public class GridSystemV3_2 : MonoBehaviour
         }
     }
 
-    private float GetYValue(int indexOfX, int indexOfZ)
+    private float GetYValue(int x, int z)
     {
-        return perlinNoiseSettings.GetPerlinNoiseValue(indexOfX, indexOfZ); //* GetTransitionPercentage(indexOfX, indexOfZ);
+        return perlinNoiseSettings.GetPerlinNoiseValue(x, z); //* GetTransitionPercentage(indexOfX, indexOfZ);
+    }
+
+    private float transitionValue(int x, int z)
+    {
+
+        return 1;
     }
 
     //private float GetTransitionPercentage(int indexOfX, int indexOfZ)
