@@ -6,7 +6,7 @@ using UnityEngine;
 public class HexagonTileSettings : MonoBehaviour
 {
     public HexagonTileTypes TileTypes { set; get; }
-    private bool hasSpawned = true;
+    private bool hasSpawned = false;
 
     public int SelectedTileTypeIndex { get { return selectedTileTypeIndex; } set { selectedTileTypeIndex = value; } }
     private int selectedTileTypeIndex;
@@ -14,16 +14,16 @@ public class HexagonTileSettings : MonoBehaviour
 
     private void Update()
     {
-        if ((previousTileTypeIndex == selectedTileTypeIndex && selectedTileTypeIndex == 0 || hasSpawned) && TileTypes == null) return;
+        if (TileTypes == null || !hasSpawned || selectedTileTypeIndex == 0 || previousTileTypeIndex == selectedTileTypeIndex) return;
         UpdateTileType();
         previousTileTypeIndex = selectedTileTypeIndex;
     }
 
-    public void SetTileType(int genSelectedTileTypeIndex) 
+    public void SetTileType(int genSelectedTileTypeIndex)
     {
         selectedTileTypeIndex = genSelectedTileTypeIndex;
         previousTileTypeIndex = selectedTileTypeIndex;
-        hasSpawned = false;
+        hasSpawned = true;
     }
 
     public void UpdateTileType()

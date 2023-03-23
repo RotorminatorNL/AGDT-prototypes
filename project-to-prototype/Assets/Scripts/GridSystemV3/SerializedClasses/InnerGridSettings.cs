@@ -26,8 +26,5 @@ public class InnerGridSettings
 
         GridZStart = (grid.GridZLength - GridZLength) / 2;
         GridZEnd = GridZStart + GridZLength;
-
-        Debug.Log($"X Start = {GridXStart} || Z Start = {GridZStart} <- These should be the same");
-        Debug.Log($"X End = {GridXEnd} || Z End = {GridZEnd} <- These should be different");
     }
 }

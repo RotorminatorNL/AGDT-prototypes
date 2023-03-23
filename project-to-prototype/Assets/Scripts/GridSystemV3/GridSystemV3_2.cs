@@ -23,8 +23,8 @@ public class GridSystemV3_2 : MonoBehaviour
         ClearGrid();
 
         innerGrid.CalculateBounds(outerGrid);
-        //transitionSettings.SetTransitionPercentages(innerGrid.GridXStart, innerGrid.GridXEnd, innerGrid.GridXLength, "X");
-        //transitionSettings.SetTransitionPercentages(innerGrid.GridZStart, innerGrid.GridZEnd, innerGrid.GridZLength, "Z");
+        transitionSettings.SetTransitionPercentages(innerGrid.GridXStart, innerGrid.GridXEnd, innerGrid.GridXLength, "X");
+        transitionSettings.SetTransitionPercentages(innerGrid.GridZStart, innerGrid.GridZEnd, innerGrid.GridZLength, "Z");
 
         CreateHexagonTilePool();
         GenerateOuterGrid();
@@ -35,7 +35,7 @@ public class GridSystemV3_2 : MonoBehaviour
     {
         bool outerGridSizeWrong = outerGrid.GridXLength <= 0 || outerGrid.GridZLength <= 0;
         bool innerGridSizeWrong = innerGrid.GridXLength <= 0 || innerGrid.GridZLength <= 0;
-        if (outerGridSizeWrong || innerGridSizeWrong /* || transitionSettings.TransitionLength <= 0 */) return false;
+        if (outerGridSizeWrong || innerGridSizeWrong || transitionSettings.Length <= 0) return false;
         return true;
     }
 
@@ -75,29 +75,24 @@ public class GridSystemV3_2 : MonoBehaviour
 
     private float GetYValue(int x, int z)
     {
-        return perlinNoiseSettings.GetPerlinNoiseValue(x, z); //* GetTransitionPercentage(indexOfX, indexOfZ);
+        float newYValue = perlinNoiseSettings.GetPerlinNoiseValue(x, z) * GetTransitionPercentage(x, z);
+        return newYValue < 1 ? 1 : newYValue;
     }
 
-    private float transitionValue(int x, int z)
+    private float GetTransitionPercentage(int x, int z)
     {
+        if (transitionSettings.XHexagons.ContainsKey(x) && innerGrid.GridZStart <= z && innerGrid.GridZEnd >= z) return transitionSettings.XHexagons[x];
+        else if (transitionSettings.ZHexagons.ContainsKey(z) && innerGrid.GridXStart <= x && innerGrid.GridXEnd >= x) return transitionSettings.ZHexagons[z];
+        else if (transitionSettings.XHexagons.ContainsKey(x) && transitionSettings.ZHexagons.ContainsKey(z))
+        {
+            if (x <= innerGrid.GridXStart && z <= innerGrid.GridZStart) return (x - innerGrid.GridXStart) <= (z - innerGrid.GridZStart) ? transitionSettings.XHexagons[x] : transitionSettings.ZHexagons[z];
+            else if (x >= innerGrid.GridXEnd && z <= innerGrid.GridZStart) return (x - innerGrid.GridXEnd) >= (innerGrid.GridZStart - z) ? transitionSettings.XHexagons[x] : transitionSettings.ZHexagons[z];
+            else if (x <= innerGrid.GridXStart && z >= innerGrid.GridZEnd) return (innerGrid.GridXStart - x) >= (z - innerGrid.GridZEnd) ? transitionSettings.XHexagons[x] : transitionSettings.ZHexagons[z];
+            else return (x - innerGrid.GridXEnd) >= (z - innerGrid.GridZEnd) ? transitionSettings.XHexagons[x] : transitionSettings.ZHexagons[z];
+        }
 
         return 1;
     }
-
-    //private float GetTransitionPercentage(int indexOfX, int indexOfZ)
-    //{
-    //    if (transitionSettings.TransitionXVertices.ContainsKey(indexOfX) && innerGrid.GridZStart <= indexOfZ && innerGrid.GridZEnd >= indexOfZ) return transitionSettings.TransitionXVertices[indexOfX];
-    //    else if (transitionSettings.TransitionZVertices.ContainsKey(indexOfZ) && innerGrid.GridXStart <= indexOfX && innerGrid.GridXEnd >= indexOfX) return transitionSettings.TransitionZVertices[indexOfZ];
-    //    else if (transitionSettings.TransitionXVertices.ContainsKey(indexOfX) && transitionSettings.TransitionZVertices.ContainsKey(indexOfZ))
-    //    {
-    //        if (indexOfX <= innerGrid.GridXStart && indexOfZ <= innerGrid.GridZStart) return (indexOfX - innerGrid.GridXStart) <= (indexOfZ - innerGrid.GridZStart) ? transitionSettings.TransitionXVertices[indexOfX] : transitionSettings.TransitionZVertices[indexOfZ];
-    //        else if (indexOfX >= innerGrid.GridXEnd && indexOfZ <= innerGrid.GridZStart) return (indexOfX - innerGrid.GridXEnd) >= (innerGrid.GridZStart - indexOfZ) ? transitionSettings.TransitionXVertices[indexOfX] : transitionSettings.TransitionZVertices[indexOfZ];
-    //        else if (indexOfX <= innerGrid.GridXStart && indexOfZ >= innerGrid.GridZEnd) return (innerGrid.GridXStart - indexOfX) >= (indexOfZ - innerGrid.GridZEnd) ? transitionSettings.TransitionXVertices[indexOfX] : transitionSettings.TransitionZVertices[indexOfZ];
-    //        else return (indexOfX - innerGrid.GridXEnd) >= (indexOfZ - innerGrid.GridZEnd) ? transitionSettings.TransitionXVertices[indexOfX] : transitionSettings.TransitionZVertices[indexOfZ];
-    //    }
-
-    //    return 1;
-    //}
 
     private void GenerateInnerGrid()
     {

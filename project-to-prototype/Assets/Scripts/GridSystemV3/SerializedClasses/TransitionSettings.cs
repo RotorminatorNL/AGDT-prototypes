@@ -7,12 +7,12 @@ public class TransitionSettings
 {
     public int Length = 10;
     [Range(0f, 10f)] public float Curve = 1f;
-    [HideInInspector] public Dictionary<int, float> XVertices;
-    [HideInInspector] public Dictionary<int, float> ZVertices;
+    [HideInInspector] public Dictionary<int, float> XHexagons;
+    [HideInInspector] public Dictionary<int, float> ZHexagons;
 
     public void SetTransitionPercentages(int innerGridStart, int innerGridEnd, int innerGridLength, string axis = "X")
     {
-        Dictionary<int, float> transitionVertices = new Dictionary<int, float>();
+        Dictionary<int, float> transitionHexagons = new Dictionary<int, float>();
         bool otherSide = false;
         for (int x = Length, i = innerGridStart - Length; i <= innerGridEnd + Length; i++)
         {
@@ -24,17 +24,17 @@ public class TransitionSettings
             }
 
             float percentage = CalculatePercentage(otherSide == false ? x-- : x++);
-            transitionVertices.Add(i, percentage);
+            transitionHexagons.Add(i, percentage);
         }
 
-        if (axis == "X") XVertices = transitionVertices;
-        else if (axis == "Z") ZVertices = transitionVertices;
+        if (axis == "X") XHexagons = transitionHexagons;
+        else if (axis == "Z") ZHexagons = transitionHexagons;
     }
 
     private float CalculatePercentage(float currentStep)
     {
         if (currentStep == Length) return 1f;
-        else if (currentStep == 0f) return 0f;
+        else if (currentStep == 0f) return 1f;
         else
         {
             float percentage = currentStep / Length;

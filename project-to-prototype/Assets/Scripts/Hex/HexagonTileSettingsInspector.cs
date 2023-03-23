@@ -11,6 +11,7 @@ public class HexagonTileSettingsInspector : Editor
     public override void OnInspectorGUI()
     {
         DrawDefaultInspector();
+
         HexagonTileSettings hexagonTileSettings = (HexagonTileSettings)target;
         HexagonTileTypes tileTypes = hexagonTileSettings.transform.parent.GetComponent<GridSystemV3_2>().TileTypes;
 
