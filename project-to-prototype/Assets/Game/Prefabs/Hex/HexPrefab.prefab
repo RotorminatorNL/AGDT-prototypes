@@ -48,6 +48,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71b8ea887da3fe845b62cb773a5c9725, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TileTypes: {fileID: 11400000, guid: 4a0fd089484695847b44bfa1b24f8558, type: 2}
   meshFilter: {fileID: 5570103200276789455}
   meshRenderer: {fileID: -2588546466035665267}
   meshCollider: {fileID: -4716862221251726148}

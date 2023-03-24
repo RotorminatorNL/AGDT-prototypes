@@ -13,7 +13,7 @@ public class HexagonTileSettingsInspector : Editor
         DrawDefaultInspector();
 
         HexagonTileSettings hexagonTileSettings = (HexagonTileSettings)target;
-        HexagonTileTypes tileTypes = hexagonTileSettings.transform.parent?.GetComponent<GridSystemV3_2>().TileTypes;
+        HexagonTileTypes tileTypes = hexagonTileSettings.TileTypes;
 
         if (tileTypes == null) return;
         hexagonTileSettings.TileTypes = tileTypes;

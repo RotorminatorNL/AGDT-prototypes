@@ -12,31 +12,21 @@ public class GridSystemV3_2_Inspector : Editor
 
         GridSystemV3_2 gridSystem = (GridSystemV3_2)target;
 
-        if (gridSystem.TileTypes == null)
-        {
-            gridSystem.HexagonTiles = new List<HexagonTileTypeChance>();
-        }
-        else
-        {
-            List<HexagonTileType> newTiles = gridSystem.TileTypes.Types;
-
-            if (IsTileListUpdated(gridSystem.HexagonTiles, newTiles))
-            {
-                gridSystem.HexagonTiles = new List<HexagonTileTypeChance>();
-                foreach (HexagonTileType tile in newTiles) gridSystem.HexagonTiles.Add(new HexagonTileTypeChance(tile.Name));
-            }
-        }
+        gridSystem.OuterGrid.HexagonTiles = GetTileTypeChanceList(gridSystem.OuterGrid.HexagonTiles, gridSystem.OuterGrid.HexagonTileTypes);
+        gridSystem.InnerGrid.HexagonTiles = GetTileTypeChanceList(gridSystem.InnerGrid.HexagonTiles, gridSystem.InnerGrid.HexagonTileTypes);
 
         if (GUILayout.Button("(Re)Generate grid")) gridSystem.GenerateGrid();
         if (GUILayout.Button("Clear grid")) gridSystem.ClearGrid();
 
     }
 
-    private bool IsTileListUpdated(List<HexagonTileTypeChance> oldTiles, List<HexagonTileType> newTiles)
+    private List<HexagonTileTypeChance> GetTileTypeChanceList(List<HexagonTileTypeChance> oldTileTypes, HexagonTileTypes newTileTypes)
     {
-        if (oldTiles.Count != newTiles.Count)
-            return true;
+        List<HexagonTileTypeChance> temp = new List<HexagonTileTypeChance>();
 
-        return false;
+        if (newTileTypes != null && oldTileTypes.Count != newTileTypes.Types.Count) foreach (HexagonTileType tile in newTileTypes.Types) temp.Add(new HexagonTileTypeChance(tile.Name));
+        else temp = oldTileTypes;
+
+        return temp;
     }
 }

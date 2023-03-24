@@ -8,7 +8,7 @@ using static UnityEditor.Experimental.GraphView.GraphView;
 [ExecuteInEditMode]
 public class HexagonTileSettings : MonoBehaviour
 {
-    public HexagonTileTypes TileTypes { set; get; }
+    public HexagonTileTypes TileTypes;
     private bool hasSpawned = false;
 
     [SerializeField] private MeshFilter meshFilter;
@@ -22,21 +22,15 @@ public class HexagonTileSettings : MonoBehaviour
     private int selectedTileTypeIndex;
     private int previousTileTypeIndex;
 
-    private void Awake()
-    {
-        gridSystem = GetComponentInParent<GridSystemV3_2>();
-        TileTypes = gridSystem?.TileTypes;
-    }
-
     private void Start()
     {
-        HexagonTileInfo hexagonTileInfo = GetComponentInChildren<HexagonTileInfo>();
-        if (hexagonTileInfo == null) return;
+        gridSystem = GetComponentInParent<GridSystemV3_2>();
         hasSpawned = true;
 
-        int index = TileTypes.Types.FindIndex(type => type.Name == hexagonTileInfo.HexagonTileType.Name);
-        previousTileTypeIndex = index;
-        selectedTileTypeIndex = index;
+        HexagonTileInfo hexagonTileInfo = GetComponentInChildren<HexagonTileInfo>();
+        if (hexagonTileInfo == null) return;
+        selectedTileTypeIndex = TileTypes.Types.FindIndex(type => type.Name == hexagonTileInfo.HexagonTileType.Name);
+        previousTileTypeIndex = selectedTileTypeIndex;
     }
 
     private void Update()
@@ -48,9 +42,9 @@ public class HexagonTileSettings : MonoBehaviour
         EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
     }
 
-    public void SetTileType(int genSelectedTileTypeIndex)
+    public void SetTileType(string genSelectedTileType)
     {
-        selectedTileTypeIndex = genSelectedTileTypeIndex;
+        selectedTileTypeIndex = TileTypes.Types.FindIndex(type => type.Name == genSelectedTileType);
         previousTileTypeIndex = selectedTileTypeIndex;
         hasSpawned = true;
     }

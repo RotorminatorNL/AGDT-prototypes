@@ -6,21 +6,26 @@ using UnityEngine.SceneManagement;
 
 public class GridSystemV3_2 : MonoBehaviour
 {
-    public HexagonTileTypes TileTypes { get { return tileTypes; } }
-    [SerializeField] private HexagonTileTypes tileTypes;
-    public List<HexagonTileTypeChance> HexagonTiles = new List<HexagonTileTypeChance>();
-    private List<int> hexagonTilePool;
+    [Header("Hexagon settings")]
+    [SerializeField] private GameObject hexagonParentPrefab;
+    [SerializeField] private float hexagonTileXSpaceCorrection = 0f;
+    [SerializeField] private float hexagonTileZSpaceCorrection = 0.134f;
+    [SerializeField] private float hexagonTileXOddOffset = 0.5f;
 
-    [SerializeField] private OuterGridSettings outerGrid;
+    [Space(10)]
+    
+    public OuterGridSettings OuterGrid;
     [SerializeField] private PerlinNoiseSettings perlinNoiseSettings;
     [SerializeField] private TransitionSettings transitionSettings;
     public InnerGridSettings InnerGrid;
+
+    [Space(10)]
 
     public NavMeshSurface RoadMesh;
 
     private void Awake()
     {
-        InnerGrid.CalculateBounds(outerGrid);
+        InnerGrid.CalculateBounds(OuterGrid);
     }
 
     public void GenerateGrid()
@@ -29,11 +34,12 @@ public class GridSystemV3_2 : MonoBehaviour
 
         ClearGrid();
 
-        InnerGrid.CalculateBounds(outerGrid);
+        InnerGrid.CalculateBounds(OuterGrid);
         transitionSettings.SetTransitionPercentages(InnerGrid.GridXStart, InnerGrid.GridXEnd, InnerGrid.GridXLength, "X");
         transitionSettings.SetTransitionPercentages(InnerGrid.GridZStart, InnerGrid.GridZEnd, InnerGrid.GridZLength, "Z");
 
-        CreateHexagonTilePool();
+        OuterGrid.CreateHexagonTilePool();
+        InnerGrid.CreateHexagonTilePool();
         GenerateOuterGrid();
         GenerateInnerGrid();
 
@@ -44,7 +50,7 @@ public class GridSystemV3_2 : MonoBehaviour
 
     private bool AbleToGenerate()
     {
-        bool outerGridSizeWrong = outerGrid.GridXLength <= 0 || outerGrid.GridZLength <= 0;
+        bool outerGridSizeWrong = OuterGrid.GridXLength <= 0 || OuterGrid.GridZLength <= 0;
         bool innerGridSizeWrong = InnerGrid.GridXLength <= 0 || InnerGrid.GridZLength <= 0;
         if (outerGridSizeWrong || innerGridSizeWrong || transitionSettings.Length <= 0) return false;
         return true;
@@ -56,30 +62,16 @@ public class GridSystemV3_2 : MonoBehaviour
         RoadMesh.BuildNavMesh();
     }
 
-    private void CreateHexagonTilePool()
-    {
-        if (tileTypes == null) return;
-        HexagonTiles[0].Chance = 0;
-        hexagonTilePool = new List<int>();
-        for (int i = 0; i < HexagonTiles.Count; i++)
-        {
-            for (int j = 0; j < (HexagonTiles[i].Chance * 10); j++)
-            {
-                hexagonTilePool.Add(i);
-            }
-        }
-    }
-
     private void GenerateOuterGrid()
     {
-        for (int z = 0; z < outerGrid.GridZLength; z++)
+        for (int z = 0; z < OuterGrid.GridZLength; z++)
         {
-            for (int x = 0; x < outerGrid.GridXLength; x++)
+            for (int x = 0; x < OuterGrid.GridXLength; x++)
             {
                 if (x >= InnerGrid.GridXStart && x <= InnerGrid.GridXEnd && z >= InnerGrid.GridZStart && z <= InnerGrid.GridZEnd) { /* skip 'm */ }
                 else
                 {
-                    InstantiateHexagon(x, z, GetYValue(x, z));
+                    InstantiateHexagon(OuterGrid.GetHexagonTileType(), x, z, GetYValue(x, z));
                 }
             }
         }
@@ -108,40 +100,35 @@ public class GridSystemV3_2 : MonoBehaviour
 
     private void GenerateInnerGrid()
     {
-        int newHexagonTerrainZLength = InnerGrid.GridZEnd + Mathf.CeilToInt(InnerGrid.GridZLength * InnerGrid.HexagonTileZSpaceCorrection) + 1;
+        int newHexagonTerrainZLength = InnerGrid.GridZEnd + Mathf.CeilToInt(InnerGrid.GridZLength * hexagonTileZSpaceCorrection) + 1;
 
         for (int z = InnerGrid.GridZStart; z < newHexagonTerrainZLength; z++)
         {
             for (int x = InnerGrid.GridXStart; x < InnerGrid.GridXEnd + 1; x++)
             {
-                InstantiateHexagon(x, z);
+                InstantiateHexagon(InnerGrid.GetHexagonTileType(), x, z); ;
             }
         }
     }
 
-    private void InstantiateHexagon(int xPos, int zPos, float newHeight = 1)
+    private void InstantiateHexagon(string tileType, int xPos, int zPos, float newHeight = 1)
     {
-        if (tileTypes == null) return;
-        GameObject hexPrefab = tileTypes.Types[0].Prefab;
+        if (hexagonParentPrefab == null) return;
+        GameObject hexPrefab = hexagonParentPrefab;
         GameObject hex = Instantiate(hexPrefab, new Vector3(0, 0, 0), Quaternion.identity, transform);
 
         HexagonTileSettings hexagonTileSetting = hex.GetComponent<HexagonTileSettings>();
-        hexagonTileSetting.TileTypes = tileTypes;
-        hexagonTileSetting.SetTileType(GetHexagonTileType());
+        hexagonTileSetting.SetTileType(tileType);
         hexagonTileSetting.UpdateTileType();
 
         float x = xPos;
-        float z = zPos - ((zPos - InnerGrid.GridZStart) * InnerGrid.HexagonTileZSpaceCorrection);
+        float z = zPos - ((zPos - InnerGrid.GridZStart) * hexagonTileZSpaceCorrection);
 
-        if (zPos % 2 == 1) x += InnerGrid.HexagonTileXOddOffset;
+        if (zPos % 2 == 1) x += hexagonTileXOddOffset;
 
         hex.transform.localPosition = new Vector3(x, 0, z);
         hex.transform.localScale = new Vector3(1, newHeight, 1);
         hex.name = $"Hex coord {xPos},{zPos}";
     }
 
-    public int GetHexagonTileType()
-    {
-        return hexagonTilePool[Random.Range(0, hexagonTilePool.Count)];
-    }
 }
