@@ -5,12 +5,13 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 [Serializable]
-public class HexagonTileTypeChance
+public class HexagonTileTypeSettings
 {
     public string Name;
     [Range(0f, 1f)] public float Chance = 1f;
+    public bool Preserve;
 
-    public HexagonTileTypeChance(string name)
+    public HexagonTileTypeSettings(string name)
     {
         Name = name;
     }

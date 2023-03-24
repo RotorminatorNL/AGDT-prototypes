@@ -20,11 +20,11 @@ public class GridSystemV3_2_Inspector : Editor
 
     }
 
-    private List<HexagonTileTypeChance> GetTileTypeChanceList(List<HexagonTileTypeChance> oldTileTypes, HexagonTileTypes newTileTypes)
+    private List<HexagonTileTypeSettings> GetTileTypeChanceList(List<HexagonTileTypeSettings> oldTileTypes, HexagonTileTypes newTileTypes)
     {
-        List<HexagonTileTypeChance> temp = new List<HexagonTileTypeChance>();
+        List<HexagonTileTypeSettings> temp = new List<HexagonTileTypeSettings>();
 
-        if (newTileTypes != null && oldTileTypes.Count != newTileTypes.Types.Count) foreach (HexagonTileType tile in newTileTypes.Types) temp.Add(new HexagonTileTypeChance(tile.Name));
+        if (newTileTypes != null && oldTileTypes.Count != newTileTypes.Types.Count) foreach (HexagonTileType tile in newTileTypes.Types) temp.Add(new HexagonTileTypeSettings(tile.Name));
         else temp = oldTileTypes;
 
         return temp;

@@ -7,7 +7,7 @@ using UnityEngine;
 public class OuterGridSettings
 {
     public HexagonTileTypes HexagonTileTypes;
-    public List<HexagonTileTypeChance> HexagonTiles = new List<HexagonTileTypeChance>();
+    public List<HexagonTileTypeSettings> HexagonTiles = new List<HexagonTileTypeSettings>();
     private List<int> hexagonTilePool;
 
     [Header("Recommended: 6.400 (example: 80 * 80) or less")]

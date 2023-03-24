@@ -1,9 +1,7 @@
 using System.Collections.Generic;
 using UnityEditor.SceneManagement;
-using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using static UnityEditor.Experimental.GraphView.GraphView;
 
 [ExecuteInEditMode]
 public class HexagonTileSettings : MonoBehaviour
