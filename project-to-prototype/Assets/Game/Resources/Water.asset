@@ -15,3 +15,11 @@ MonoBehaviour:
   Name: Water
   PoolKey: Water
   Prefab: {fileID: 7805860827552687187, guid: 67839f45e9f13e24d98ae2a503dc30eb, type: 3}
+  LayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  Material: {fileID: 2100000, guid: cf051fba995609b459f0eb4baf4bb478, type: 2}
+  Mesh: {fileID: 4300000, guid: 31048d640905d5a448a723dd7007433e, type: 3}
+  MeshColliderConvex: 0
+  MeshColliderIsTrigger: 0
+  Placeable: 0

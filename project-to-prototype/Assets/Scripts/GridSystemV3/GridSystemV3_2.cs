@@ -16,7 +16,7 @@ public class GridSystemV3_2 : MonoBehaviour
     [SerializeField] private TransitionSettings transitionSettings;
     public InnerGridSettings InnerGrid;
 
-    [SerializeField] private NavMeshSurface navMeshSurface;
+    public NavMeshSurface RoadMesh;
 
     private void Awake()
     {
@@ -37,7 +37,7 @@ public class GridSystemV3_2 : MonoBehaviour
         GenerateOuterGrid();
         GenerateInnerGrid();
 
-        navMeshSurface.BuildNavMesh();
+        RoadMesh.BuildNavMesh();
 
         EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
     }
@@ -53,7 +53,7 @@ public class GridSystemV3_2 : MonoBehaviour
     public void ClearGrid()
     {
         for (int i = transform.childCount - 1; i >= 0; i--) DestroyImmediate(transform.GetChild(i).gameObject);
-        navMeshSurface.BuildNavMesh();
+        RoadMesh.BuildNavMesh();
     }
 
     private void CreateHexagonTilePool()
@@ -135,7 +135,7 @@ public class GridSystemV3_2 : MonoBehaviour
 
         if (zPos % 2 == 1) x += InnerGrid.HexagonTileXOddOffset;
 
-        hex.transform.position = new Vector3(x, 0.8f, z);
+        hex.transform.localPosition = new Vector3(x, 0, z);
         hex.transform.localScale = new Vector3(1, newHeight, 1);
         hex.name = $"Hex coord {xPos},{zPos}";
     }

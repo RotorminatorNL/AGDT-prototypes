@@ -15,3 +15,11 @@ MonoBehaviour:
   Name: Parent
   PoolKey: Parent
   Prefab: {fileID: 1692578891167136568, guid: 9f6c4504d2d39354cbff663779335f71, type: 3}
+  LayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  Material: {fileID: 0}
+  Mesh: {fileID: 0}
+  MeshColliderConvex: 0
+  MeshColliderIsTrigger: 0
+  Placeable: 0

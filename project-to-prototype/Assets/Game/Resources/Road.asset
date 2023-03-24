@@ -15,3 +15,11 @@ MonoBehaviour:
   Name: Road
   PoolKey: Road
   Prefab: {fileID: 7805860827552687187, guid: d803b34c3c4f2784c938dead762aa262, type: 3}
+  LayerMask:
+    serializedVersion: 2
+    m_Bits: 64
+  Material: {fileID: 2100000, guid: 4744aba9113820b4ba6f7ca0de898ec1, type: 2}
+  Mesh: {fileID: 4300000, guid: 31048d640905d5a448a723dd7007433e, type: 3}
+  MeshColliderConvex: 1
+  MeshColliderIsTrigger: 0
+  Placeable: 0
