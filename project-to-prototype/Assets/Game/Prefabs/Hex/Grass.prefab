@@ -96,4 +96,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d21a383e6129a4842bd3e5d77de837e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hexagonTileType: {fileID: 0}
+  hexagonTileType: {fileID: 11400000, guid: 528486f5576c3394dacdc04575ddb76d, type: 2}

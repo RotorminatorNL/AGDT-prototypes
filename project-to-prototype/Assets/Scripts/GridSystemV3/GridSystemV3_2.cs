@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using Unity.AI.Navigation;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GridSystemV3_2 : MonoBehaviour
 {
@@ -36,6 +38,8 @@ public class GridSystemV3_2 : MonoBehaviour
         GenerateInnerGrid();
 
         navMeshSurface.BuildNavMesh();
+
+        EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
     }
 
     private bool AbleToGenerate()
@@ -133,7 +137,7 @@ public class GridSystemV3_2 : MonoBehaviour
 
         hex.transform.position = new Vector3(x, 0.8f, z);
         hex.transform.localScale = new Vector3(1, newHeight, 1);
-        hex.name = $"Hex-tile {xPos},{zPos}";
+        hex.name = $"Hex coord {xPos},{zPos}";
     }
 
     public int GetHexagonTileType()

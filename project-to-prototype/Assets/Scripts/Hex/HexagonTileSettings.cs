@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using UnityEditor.SceneManagement;
 using UnityEditor.UIElements;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [ExecuteInEditMode]
 public class HexagonTileSettings : MonoBehaviour
@@ -12,11 +14,28 @@ public class HexagonTileSettings : MonoBehaviour
     private int selectedTileTypeIndex;
     private int previousTileTypeIndex;
 
+    private void Awake()
+    {
+        TileTypes = GetComponentInParent<GridSystemV3_2>().TileTypes;
+    }
+
+    private void Start()
+    {
+        HexagonTileInfo hexagonTileInfo = GetComponentInChildren<HexagonTileInfo>();
+        if (hexagonTileInfo == null) return;
+        hasSpawned = true;
+
+        int index = TileTypes.Types.FindIndex(type => type.Name == hexagonTileInfo.HexagonTileType.Name);
+        previousTileTypeIndex = index;
+        selectedTileTypeIndex = index;
+    }
+
     private void Update()
     {
         if (TileTypes == null || !hasSpawned || selectedTileTypeIndex == 0 || previousTileTypeIndex == selectedTileTypeIndex) return;
         UpdateTileType();
         previousTileTypeIndex = selectedTileTypeIndex;
+        EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
     }
 
     public void SetTileType(int genSelectedTileTypeIndex)
