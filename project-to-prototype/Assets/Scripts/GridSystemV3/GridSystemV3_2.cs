@@ -1,5 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
+using Unity.AI.Navigation;
 using UnityEngine;
 
 public class GridSystemV3_2 : MonoBehaviour
@@ -9,12 +9,17 @@ public class GridSystemV3_2 : MonoBehaviour
     public List<HexagonTileTypeChance> HexagonTiles = new List<HexagonTileTypeChance>();
     private List<int> hexagonTilePool;
 
-    [Space(10)]
-
     [SerializeField] private OuterGridSettings outerGrid;
     [SerializeField] private PerlinNoiseSettings perlinNoiseSettings;
     [SerializeField] private TransitionSettings transitionSettings;
-    public InnerGridSettings innerGrid;
+    public InnerGridSettings InnerGrid;
+
+    [SerializeField] private NavMeshSurface navMeshSurface;
+
+    private void Awake()
+    {
+        InnerGrid.CalculateBounds(outerGrid);
+    }
 
     public void GenerateGrid()
     {
@@ -22,19 +27,21 @@ public class GridSystemV3_2 : MonoBehaviour
 
         ClearGrid();
 
-        innerGrid.CalculateBounds(outerGrid);
-        transitionSettings.SetTransitionPercentages(innerGrid.GridXStart, innerGrid.GridXEnd, innerGrid.GridXLength, "X");
-        transitionSettings.SetTransitionPercentages(innerGrid.GridZStart, innerGrid.GridZEnd, innerGrid.GridZLength, "Z");
+        InnerGrid.CalculateBounds(outerGrid);
+        transitionSettings.SetTransitionPercentages(InnerGrid.GridXStart, InnerGrid.GridXEnd, InnerGrid.GridXLength, "X");
+        transitionSettings.SetTransitionPercentages(InnerGrid.GridZStart, InnerGrid.GridZEnd, InnerGrid.GridZLength, "Z");
 
         CreateHexagonTilePool();
         GenerateOuterGrid();
         GenerateInnerGrid();
+
+        navMeshSurface.BuildNavMesh();
     }
 
     private bool AbleToGenerate()
     {
         bool outerGridSizeWrong = outerGrid.GridXLength <= 0 || outerGrid.GridZLength <= 0;
-        bool innerGridSizeWrong = innerGrid.GridXLength <= 0 || innerGrid.GridZLength <= 0;
+        bool innerGridSizeWrong = InnerGrid.GridXLength <= 0 || InnerGrid.GridZLength <= 0;
         if (outerGridSizeWrong || innerGridSizeWrong || transitionSettings.Length <= 0) return false;
         return true;
     }
@@ -42,6 +49,7 @@ public class GridSystemV3_2 : MonoBehaviour
     public void ClearGrid()
     {
         for (int i = transform.childCount - 1; i >= 0; i--) DestroyImmediate(transform.GetChild(i).gameObject);
+        navMeshSurface.BuildNavMesh();
     }
 
     private void CreateHexagonTilePool()
@@ -64,7 +72,7 @@ public class GridSystemV3_2 : MonoBehaviour
         {
             for (int x = 0; x < outerGrid.GridXLength; x++)
             {
-                if (x >= innerGrid.GridXStart && x <= innerGrid.GridXEnd && z >= innerGrid.GridZStart && z <= innerGrid.GridZEnd) { /* skip 'm */ }
+                if (x >= InnerGrid.GridXStart && x <= InnerGrid.GridXEnd && z >= InnerGrid.GridZStart && z <= InnerGrid.GridZEnd) { /* skip 'm */ }
                 else
                 {
                     InstantiateHexagon(x, z, GetYValue(x, z));
@@ -81,14 +89,14 @@ public class GridSystemV3_2 : MonoBehaviour
 
     private float GetTransitionPercentage(int x, int z)
     {
-        if (transitionSettings.XHexagons.ContainsKey(x) && innerGrid.GridZStart <= z && innerGrid.GridZEnd >= z) return transitionSettings.XHexagons[x];
-        else if (transitionSettings.ZHexagons.ContainsKey(z) && innerGrid.GridXStart <= x && innerGrid.GridXEnd >= x) return transitionSettings.ZHexagons[z];
+        if (transitionSettings.XHexagons.ContainsKey(x) && InnerGrid.GridZStart <= z && InnerGrid.GridZEnd >= z) return transitionSettings.XHexagons[x];
+        else if (transitionSettings.ZHexagons.ContainsKey(z) && InnerGrid.GridXStart <= x && InnerGrid.GridXEnd >= x) return transitionSettings.ZHexagons[z];
         else if (transitionSettings.XHexagons.ContainsKey(x) && transitionSettings.ZHexagons.ContainsKey(z))
         {
-            if (x <= innerGrid.GridXStart && z <= innerGrid.GridZStart) return (x - innerGrid.GridXStart) <= (z - innerGrid.GridZStart) ? transitionSettings.XHexagons[x] : transitionSettings.ZHexagons[z];
-            else if (x >= innerGrid.GridXEnd && z <= innerGrid.GridZStart) return (x - innerGrid.GridXEnd) >= (innerGrid.GridZStart - z) ? transitionSettings.XHexagons[x] : transitionSettings.ZHexagons[z];
-            else if (x <= innerGrid.GridXStart && z >= innerGrid.GridZEnd) return (innerGrid.GridXStart - x) >= (z - innerGrid.GridZEnd) ? transitionSettings.XHexagons[x] : transitionSettings.ZHexagons[z];
-            else return (x - innerGrid.GridXEnd) >= (z - innerGrid.GridZEnd) ? transitionSettings.XHexagons[x] : transitionSettings.ZHexagons[z];
+            if (x <= InnerGrid.GridXStart && z <= InnerGrid.GridZStart) return (x - InnerGrid.GridXStart) <= (z - InnerGrid.GridZStart) ? transitionSettings.XHexagons[x] : transitionSettings.ZHexagons[z];
+            else if (x >= InnerGrid.GridXEnd && z <= InnerGrid.GridZStart) return (x - InnerGrid.GridXEnd) >= (InnerGrid.GridZStart - z) ? transitionSettings.XHexagons[x] : transitionSettings.ZHexagons[z];
+            else if (x <= InnerGrid.GridXStart && z >= InnerGrid.GridZEnd) return (InnerGrid.GridXStart - x) >= (z - InnerGrid.GridZEnd) ? transitionSettings.XHexagons[x] : transitionSettings.ZHexagons[z];
+            else return (x - InnerGrid.GridXEnd) >= (z - InnerGrid.GridZEnd) ? transitionSettings.XHexagons[x] : transitionSettings.ZHexagons[z];
         }
 
         return 1;
@@ -96,11 +104,11 @@ public class GridSystemV3_2 : MonoBehaviour
 
     private void GenerateInnerGrid()
     {
-        int newHexagonTerrainZLength = innerGrid.GridZEnd + Mathf.CeilToInt(innerGrid.GridZLength * innerGrid.HexagonTileZSpaceCorrection) + 1;
+        int newHexagonTerrainZLength = InnerGrid.GridZEnd + Mathf.CeilToInt(InnerGrid.GridZLength * InnerGrid.HexagonTileZSpaceCorrection) + 1;
 
-        for (int z = innerGrid.GridZStart; z < newHexagonTerrainZLength; z++)
+        for (int z = InnerGrid.GridZStart; z < newHexagonTerrainZLength; z++)
         {
-            for (int x = innerGrid.GridXStart; x < innerGrid.GridXEnd + 1; x++)
+            for (int x = InnerGrid.GridXStart; x < InnerGrid.GridXEnd + 1; x++)
             {
                 InstantiateHexagon(x, z);
             }
@@ -119,9 +127,9 @@ public class GridSystemV3_2 : MonoBehaviour
         hexagonTileSetting.UpdateTileType();
 
         float x = xPos;
-        float z = zPos - ((zPos - innerGrid.GridZStart) * innerGrid.HexagonTileZSpaceCorrection);
+        float z = zPos - ((zPos - InnerGrid.GridZStart) * InnerGrid.HexagonTileZSpaceCorrection);
 
-        if (zPos % 2 == 1) x += innerGrid.HexagonTileXOddOffset;
+        if (zPos % 2 == 1) x += InnerGrid.HexagonTileXOddOffset;
 
         hex.transform.position = new Vector3(x, 0.8f, z);
         hex.transform.localScale = new Vector3(1, newHeight, 1);

@@ -3,9 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[Serializable]
-public class HexagonTileType
+[CreateAssetMenu(fileName = "TileType", menuName = "Grid system/Tile type")]
+public class HexagonTileType : ScriptableObject
 {
     public string Name;
+    public string PoolKey;
     public GameObject Prefab;
 }
