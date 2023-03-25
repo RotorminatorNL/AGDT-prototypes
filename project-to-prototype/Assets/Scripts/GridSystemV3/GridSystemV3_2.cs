@@ -141,13 +141,13 @@ public class GridSystemV3_2 : MonoBehaviour
             outerGridTilesHeight.Add(newHeight);
         }
 
-        float x = xPos;
-        float z = zPos - ((zPos - InnerGrid.GridZStart) * hexagonTileZSpaceCorrection);
+        float x = xPos + ((xPos - InnerGrid.GridXStart) * hexagonTileXSpaceCorrection);
+        float z = zPos + ((zPos - InnerGrid.GridZStart) * hexagonTileZSpaceCorrection);
 
         if (zPos % 2 == 1) x += hexagonTileXOddOffset;
 
         hex.transform.localPosition = new Vector3(x, 0, z);
-        hex.transform.localScale = new Vector3(1, newHeight, 1);
+        hex.transform.localScale = new Vector3(hex.transform.localScale.x, newHeight, hex.transform.localScale.z);
         hex.name = $"Hex coord {xPos},{zPos}";
     }
 
