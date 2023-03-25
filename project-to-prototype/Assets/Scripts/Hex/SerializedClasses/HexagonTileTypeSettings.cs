@@ -9,7 +9,6 @@ public class HexagonTileTypeSettings
 {
     public string Name;
     [Range(0f, 1f)] public float Chance = 1f;
-    public bool Preserve;
 
     public HexagonTileTypeSettings(string name)
     {

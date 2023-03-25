@@ -5,10 +5,6 @@ using UnityEngine;
 [System.Serializable]
 public class InnerGridSettings
 {
-    public HexagonTileTypes HexagonTileTypes;
-    public List<HexagonTileTypeSettings> HexagonTiles = new List<HexagonTileTypeSettings>();
-    private List<int> hexagonTilePool;
-
     [Header("Grid size")]
     public int GridXLength = 50;
     [HideInInspector] public int GridXStart { get; private set; }
@@ -17,6 +13,11 @@ public class InnerGridSettings
     public int GridZLength = 30;
     [HideInInspector] public int GridZStart { get; private set; }
     [HideInInspector] public int GridZEnd { get; private set; }
+
+    [Space(10)]
+    public HexagonTileTypes HexagonTileTypes;
+    public List<HexagonTileTypeSettings> HexagonTiles = new List<HexagonTileTypeSettings>();
+    private List<int> hexagonTilePool;
 
     public void CalculateBounds(OuterGridSettings grid)
     {

@@ -5,21 +5,26 @@ using UnityEngine;
 [System.Serializable]
 public class PerlinNoiseSettings
 {
-    public float PerlinNoiseXCoordOffset = 0f;
-    [Range(0.01f, 1f)] public float PerlinNoiseXScale = 0.05f;
+    [SerializeField] private float xCoordOffset = 0f;
+    [SerializeField, Range(0.01f, 1f)] private float xScale = 0.05f;
 
     [Space(10)]
-    public float PerlinNoiseZCoordOffset = 0f;
-    [Range(0.01f, 1f)] public float PerlinNoiseZScale = 0.05f;
+    [SerializeField] private float zCoordOffset = 0f;
+    [SerializeField, Range(0.01f, 1f)] private float zScale = 0.05f;
 
     [Space(10)]
-    [Range(0, 30)] public float PerlinNoiseYScale = 10f;
+    [SerializeField, Range(0, 30)] private float outerYScale = 10f;
+    [SerializeField, Range(0, 30)] private float innerYScale = 10f;
 
-    public float GetPerlinNoiseValue(float indexOfX, float indexOfZ)
+    public float GetPerlinNoiseValue(float indexOfX, float indexOfZ, bool isInnerGrid = false)
     {
-        float perlinNoiseXCoord = indexOfX * PerlinNoiseXScale + PerlinNoiseXCoordOffset;
-        float perlinNoiseZCoord = indexOfZ * PerlinNoiseZScale + PerlinNoiseZCoordOffset;
+        float perlinNoiseXCoord = indexOfX * xScale + xCoordOffset;
+        float perlinNoiseZCoord = indexOfZ * zScale + zCoordOffset;
 
-        return Mathf.PerlinNoise(perlinNoiseXCoord, perlinNoiseZCoord) * PerlinNoiseYScale;
+        float scaleToUse = !isInnerGrid ? outerYScale : innerYScale;
+
+        return Mathf.PerlinNoise(perlinNoiseXCoord, perlinNoiseZCoord) * scaleToUse;
+
+
     }
 }

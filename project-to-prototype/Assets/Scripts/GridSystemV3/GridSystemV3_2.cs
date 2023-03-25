@@ -15,9 +15,12 @@ public class GridSystemV3_2 : MonoBehaviour
     [Space(10)]
     
     public OuterGridSettings OuterGrid;
-    [SerializeField] private PerlinNoiseSettings perlinNoiseSettings;
+    [Space(5)]
     [SerializeField] private TransitionSettings transitionSettings;
+    [Space(5)]
     public InnerGridSettings InnerGrid;
+    [Space(5)]
+    [SerializeField] private PerlinNoiseSettings perlinNoiseSettings;
 
     [Space(10)]
 
@@ -35,8 +38,7 @@ public class GridSystemV3_2 : MonoBehaviour
         ClearGrid();
 
         InnerGrid.CalculateBounds(OuterGrid);
-        transitionSettings.SetTransitionPercentages(InnerGrid.GridXStart, InnerGrid.GridXEnd, InnerGrid.GridXLength, "X");
-        transitionSettings.SetTransitionPercentages(InnerGrid.GridZStart, InnerGrid.GridZEnd, InnerGrid.GridZLength, "Z");
+        transitionSettings.CalculateBounds(InnerGrid);
 
         OuterGrid.CreateHexagonTilePool();
         InnerGrid.CreateHexagonTilePool();
@@ -77,27 +79,6 @@ public class GridSystemV3_2 : MonoBehaviour
         }
     }
 
-    private float GetYValue(int x, int z)
-    {
-        float newYValue = perlinNoiseSettings.GetPerlinNoiseValue(x, z) * GetTransitionPercentage(x, z);
-        return newYValue < 1 ? 1 : newYValue;
-    }
-
-    private float GetTransitionPercentage(int x, int z)
-    {
-        if (transitionSettings.XHexagons.ContainsKey(x) && InnerGrid.GridZStart <= z && InnerGrid.GridZEnd >= z) return transitionSettings.XHexagons[x];
-        else if (transitionSettings.ZHexagons.ContainsKey(z) && InnerGrid.GridXStart <= x && InnerGrid.GridXEnd >= x) return transitionSettings.ZHexagons[z];
-        else if (transitionSettings.XHexagons.ContainsKey(x) && transitionSettings.ZHexagons.ContainsKey(z))
-        {
-            if (x <= InnerGrid.GridXStart && z <= InnerGrid.GridZStart) return (x - InnerGrid.GridXStart) <= (z - InnerGrid.GridZStart) ? transitionSettings.XHexagons[x] : transitionSettings.ZHexagons[z];
-            else if (x >= InnerGrid.GridXEnd && z <= InnerGrid.GridZStart) return (x - InnerGrid.GridXEnd) >= (InnerGrid.GridZStart - z) ? transitionSettings.XHexagons[x] : transitionSettings.ZHexagons[z];
-            else if (x <= InnerGrid.GridXStart && z >= InnerGrid.GridZEnd) return (InnerGrid.GridXStart - x) >= (z - InnerGrid.GridZEnd) ? transitionSettings.XHexagons[x] : transitionSettings.ZHexagons[z];
-            else return (x - InnerGrid.GridXEnd) >= (z - InnerGrid.GridZEnd) ? transitionSettings.XHexagons[x] : transitionSettings.ZHexagons[z];
-        }
-
-        return 1;
-    }
-
     private void GenerateInnerGrid()
     {
         int newHexagonTerrainZLength = InnerGrid.GridZEnd + Mathf.CeilToInt(InnerGrid.GridZLength * hexagonTileZSpaceCorrection) + 1;
@@ -106,9 +87,24 @@ public class GridSystemV3_2 : MonoBehaviour
         {
             for (int x = InnerGrid.GridXStart; x < InnerGrid.GridXEnd + 1; x++)
             {
-                InstantiateHexagon(InnerGrid.GetHexagonTileType(), x, z); ;
+                InstantiateHexagon(InnerGrid.GetHexagonTileType(), x, z, GetYValue(x, z, true));
             }
         }
+    }
+
+    private float GetYValue(int x, int z, bool isInnerGrid = false)
+    {
+        float transitionPercentage = transitionSettings.GetTransitionPercentage(x, z);
+        if (!isInnerGrid && transitionPercentage != 1)
+        {
+            float outerPerlinNoise = perlinNoiseSettings.GetPerlinNoiseValue(x, z);
+            float innerPerlinNoise = perlinNoiseSettings.GetPerlinNoiseValue(x, z, true);
+
+            return innerPerlinNoise + ((outerPerlinNoise - innerPerlinNoise) * transitionPercentage);
+        }
+
+        float perlinNoise = perlinNoiseSettings.GetPerlinNoiseValue(x, z, isInnerGrid);
+        return perlinNoise;
     }
 
     private void InstantiateHexagon(string tileType, int xPos, int zPos, float newHeight = 1)

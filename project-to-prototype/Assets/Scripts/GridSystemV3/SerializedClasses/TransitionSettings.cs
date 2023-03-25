@@ -6,41 +6,66 @@ using UnityEngine;
 public class TransitionSettings
 {
     public int Length = 10;
-    [Range(0f, 10f)] public float Curve = 1f;
+    [Range(0f, 10f)] public float Curve = 1f; // currently out of use
     [HideInInspector] public Dictionary<int, float> XHexagons;
     [HideInInspector] public Dictionary<int, float> ZHexagons;
 
-    public void SetTransitionPercentages(int innerGridStart, int innerGridEnd, int innerGridLength, string axis = "X")
+    private int gridXLeftStart;
+    private int gridXLeftEnd;
+    private int gridXRightStart;
+    private int gridXRightEnd;
+    private int gridZBottomStart;
+    private int gridZBottomEnd;
+    private int gridZTopStart;
+    private int gridZTopEnd;
+
+    public void CalculateBounds(InnerGridSettings innerGrid)
     {
-        Dictionary<int, float> transitionHexagons = new Dictionary<int, float>();
-        bool otherSide = false;
-        for (int x = Length, i = innerGridStart - Length; i <= innerGridEnd + Length; i++)
-        {
-            if (i == innerGridStart)
-            {
-                i += innerGridLength + 1;
-                x = 1;
-                otherSide = true;
-            }
+        gridXLeftStart = innerGrid.GridXStart - Length;
+        gridXLeftEnd = innerGrid.GridXStart;
+        gridXRightStart = innerGrid.GridXEnd;
+        gridXRightEnd = innerGrid.GridXEnd + Length;
 
-            float percentage = CalculatePercentage(otherSide == false ? x-- : x++);
-            transitionHexagons.Add(i, percentage);
-        }
-
-        if (axis == "X") XHexagons = transitionHexagons;
-        else if (axis == "Z") ZHexagons = transitionHexagons;
+        gridZBottomStart = innerGrid.GridZStart - Length;
+        gridZBottomEnd = innerGrid.GridZStart;
+        gridZTopStart = innerGrid.GridZEnd;
+        gridZTopEnd = innerGrid.GridZEnd + Length;
     }
 
-    private float CalculatePercentage(float currentStep)
+    public float GetTransitionPercentage(int x, int z)
     {
-        if (currentStep == Length) return 1f;
-        else if (currentStep == 0f) return 1f;
-        else
+        float percentage = 1f;
+
+        if ((gridXLeftStart > x || gridXRightEnd < x) && (gridZBottomEnd > z || gridZTopEnd < z)) return 1;
+
+        if (gridXLeftStart < x && gridXLeftEnd >= x) 
         {
-            float percentage = currentStep / Length;
-            percentage = Mathf.Pow(percentage, Curve);
-            percentage = Mathf.Lerp(0f, 100f, percentage);
-            return percentage / 100f;
+            float xPercentage = (float)(gridXLeftEnd - x) / Length;
+            float zBottomPercentage = (float)(gridZBottomEnd - z) / Length;
+            float zTopPercentage = (float)(z - gridZTopStart) / Length;
+
+            if (gridZBottomEnd < z && gridZTopStart > z) return xPercentage;
+            if (gridZBottomStart < z && gridZBottomEnd >= z) return xPercentage >= zBottomPercentage ? xPercentage : zBottomPercentage;
+            if (gridZTopStart <= z && gridZTopEnd > z) return xPercentage >= zTopPercentage ? xPercentage : zTopPercentage;
         }
+        else if (gridXRightStart <= x && gridXRightEnd > x)
+        {
+            float xPercentage = (float)(x - gridXRightStart) / Length;
+            float zBottomPercentage = (float)(gridZBottomEnd - z) / Length;
+            float zTopPercentage = (float)(z - gridZTopStart) / Length;
+
+            if (gridZBottomEnd < z && gridZTopStart > z) return xPercentage;
+            if (gridZBottomStart < z && gridZBottomEnd >= z) return xPercentage >= zBottomPercentage ? xPercentage : zBottomPercentage;
+            if (gridZTopStart <= z && gridZTopEnd > z) return xPercentage >= zTopPercentage ? xPercentage : zTopPercentage;
+        }
+        else if (gridZBottomStart < z && gridZBottomEnd > z)
+        {
+            if (gridXLeftEnd < x && gridXRightStart > x) return (float)(gridZBottomEnd - z) / Length;
+        }
+        else if (gridZTopStart < z && gridZTopEnd > z)
+        {
+            if (gridXLeftEnd < x && gridXRightStart > x) return (float)(z - gridZTopStart) / Length;
+        }
+        return percentage;
     }
 }

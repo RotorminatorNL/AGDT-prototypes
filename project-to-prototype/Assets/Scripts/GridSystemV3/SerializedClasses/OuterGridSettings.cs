@@ -6,13 +6,13 @@ using UnityEngine;
 [System.Serializable]
 public class OuterGridSettings
 {
-    public HexagonTileTypes HexagonTileTypes;
-    public List<HexagonTileTypeSettings> HexagonTiles = new List<HexagonTileTypeSettings>();
-    private List<int> hexagonTilePool;
-
     [Header("Recommended: 6.400 (example: 80 * 80) or less")]
     [Min(1)] public int GridXLength = 80;
     [Min(1)] public int GridZLength = 80;
+    [Space(10)]
+    public HexagonTileTypes HexagonTileTypes;
+    public List<HexagonTileTypeSettings> HexagonTiles = new List<HexagonTileTypeSettings>();
+    private List<int> hexagonTilePool;
 
     public void CreateHexagonTilePool()
     {
