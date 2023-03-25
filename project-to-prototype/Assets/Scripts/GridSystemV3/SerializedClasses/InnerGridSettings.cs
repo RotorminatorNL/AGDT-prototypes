@@ -22,4 +22,9 @@ public class InnerGridSettings
         GridZStart = (grid.GridZLength - GridZLength) / 2;
         GridZEnd = GridZStart + GridZLength;
     }
+
+    public bool IsInside(int x, int z)
+    {
+        return x >= GridXStart && x <= GridXEnd && z >= GridZStart && z <= GridZEnd;
+    }
 }

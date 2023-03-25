@@ -16,7 +16,6 @@ public class GridSystemV3_2 : MonoBehaviour
     public List<HexagonTileTypeSettings> HexagonTiles = new List<HexagonTileTypeSettings>();
 
     [Space(10)]
-
     public OuterGridSettings OuterGrid;
     [Space(5)]
     [SerializeField] private TransitionSettings transitionSettings;
@@ -24,15 +23,10 @@ public class GridSystemV3_2 : MonoBehaviour
     public InnerGridSettings InnerGrid;
     [Space(5)]
     [SerializeField] private PerlinNoiseSettings perlinNoiseSettings;
-
     [Space(10)]
-
     public NavMeshSurface RoadMesh;
 
-    private List<HexagonTileSettings> outerGridTiles;
-    private List<float> outerGridTilesHeight;
-    private List<HexagonTileSettings> innerGridTiles;
-    private List<float> innerGridTilesHeight;
+    private List<GridTiles> gridTiles;
     private float lowestHeight = 0;
     private float highestHeight = 0;
 
@@ -47,20 +41,14 @@ public class GridSystemV3_2 : MonoBehaviour
 
         ClearGrid();
 
+        gridTiles = new List<GridTiles>();
         InnerGrid.CalculateBounds(OuterGrid);
         transitionSettings.CalculateBounds(InnerGrid);
 
-        outerGridTiles = new List<HexagonTileSettings>();
-        outerGridTilesHeight = new List<float>();
-        innerGridTiles = new List<HexagonTileSettings>();
-        innerGridTilesHeight = new List<float>();
-
-        GenerateGrid();
-        SetHexagonType(outerGridTiles, outerGridTilesHeight);
-        SetHexagonType(innerGridTiles, innerGridTilesHeight);
+        GenerateTypelessHexagonGrid();
+        SetTypeOfHexagonsInGrid();
 
         RoadMesh.BuildNavMesh();
-
         EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
     }
 
@@ -78,25 +66,14 @@ public class GridSystemV3_2 : MonoBehaviour
         RoadMesh.BuildNavMesh();
     }
 
-    private void GenerateGrid()
+    private void GenerateTypelessHexagonGrid()
     {
         for (int z = 0; z < OuterGrid.GridZLength; z++)
         {
             for (int x = 0; x < OuterGrid.GridXLength; x++)
             {
-                float yValue;
-                if (x >= InnerGrid.GridXStart && x <= InnerGrid.GridXEnd && z >= InnerGrid.GridZStart && z <= InnerGrid.GridZEnd) 
-                {
-                    yValue = GetYValue(x, z, true);
-                    innerGridTilesHeight.Add(yValue);
-                    innerGridTiles.Add(InstantiateHexagon(x, z, yValue).GetComponent<HexagonTileSettings>());
-                }
-                else
-                {
-                    yValue = GetYValue(x, z);
-                    outerGridTilesHeight.Add(yValue);
-                    outerGridTiles.Add(InstantiateHexagon(x, z, yValue).GetComponent<HexagonTileSettings>());
-                }
+                float yValue = GetYValue(x, z);
+                gridTiles.Add(new GridTiles(InstantiateHexagon(x, z, yValue).GetComponent<HexagonTileSettings>(), yValue, InnerGrid.IsInside(x, z)));
 
                 if (x == 0 && z == 0)
                 {
@@ -112,10 +89,10 @@ public class GridSystemV3_2 : MonoBehaviour
         }
     }
 
-    private float GetYValue(int x, int z, bool isInnerGrid = false)
+    private float GetYValue(int x, int z)
     {
         float transitionPercentage = transitionSettings.GetTransitionPercentage(x, z);
-        if (!isInnerGrid && transitionPercentage != 1)
+        if (!InnerGrid.IsInside(x, z) && transitionPercentage != 1)
         {
             float outerPerlinNoise = perlinNoiseSettings.GetPerlinNoiseValue(x, z);
             float innerPerlinNoise = perlinNoiseSettings.GetPerlinNoiseValue(x, z, true);
@@ -123,7 +100,7 @@ public class GridSystemV3_2 : MonoBehaviour
             return innerPerlinNoise + ((outerPerlinNoise - innerPerlinNoise) * transitionPercentage);
         }
 
-        float perlinNoise = perlinNoiseSettings.GetPerlinNoiseValue(x, z, isInnerGrid);
+        float perlinNoise = perlinNoiseSettings.GetPerlinNoiseValue(x, z, InnerGrid.IsInside(x, z));
         return perlinNoise;
     }
 
@@ -140,12 +117,12 @@ public class GridSystemV3_2 : MonoBehaviour
         return hex;
     }
 
-    private void SetHexagonType(List<HexagonTileSettings> gridTiles, List<float> gridTilesHeight)
+    private void SetTypeOfHexagonsInGrid()
     {
         for (int i = 0; i < gridTiles.Count; i++)
         {
-            gridTiles[i].SetTileType(GetHexagonTileType(gridTilesHeight[i]));
-            gridTiles[i].UpdateTileType();
+            gridTiles[i].TileSettings.SetTileType(GetHexagonTileType(gridTiles[i].Height, gridTiles[i].IsInnerGrid));
+            gridTiles[i].TileSettings.UpdateTileType();
         }
     }
     
@@ -156,15 +133,23 @@ public class GridSystemV3_2 : MonoBehaviour
         {
             if (!isInnerGrid && tile.OuterGrid || isInnerGrid && tile.InnerGrid)
             {
-                if (nameOfTileType == "") nameOfTileType = IsBelowHeightLimits(tile.MaxHeight, currentHeight) ? tile.Name : nameOfTileType;
+                if (nameOfTileType == "") nameOfTileType = tile.IsHeightBelowMaxHeight(currentHeight, lowestHeight, highestHeight) ? tile.Name : nameOfTileType;
             }
         }
         return nameOfTileType;
     }
+}
 
-    private bool IsBelowHeightLimits(float maxHeightPercentage, float height)
+public class GridTiles
+{
+    public HexagonTileSettings TileSettings;
+    public float Height;
+    public bool IsInnerGrid;
+
+    public GridTiles(HexagonTileSettings tileSettings, float height, bool isInnerGrid)
     {
-        float maxHeight = lowestHeight + ((highestHeight - lowestHeight) * maxHeightPercentage);
-        return height <= maxHeight;
+        TileSettings = tileSettings;
+        Height = height;
+        IsInnerGrid = isInnerGrid;
     }
 }

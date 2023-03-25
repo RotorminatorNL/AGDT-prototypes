@@ -18,4 +18,9 @@ public class HexagonTileTypeSettings
     {
         Name = name;
     }
+
+    public bool IsHeightBelowMaxHeight(float currentHeight, float minGridHeight, float maxGridHeight)
+    {
+        return currentHeight <= minGridHeight + ((maxGridHeight - minGridHeight) * MaxHeight);
+    }
 }
