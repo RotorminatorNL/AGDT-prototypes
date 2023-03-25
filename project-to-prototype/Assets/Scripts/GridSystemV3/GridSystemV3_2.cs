@@ -12,6 +12,8 @@ public class GridSystemV3_2 : MonoBehaviour
     [SerializeField] private float hexagonTileXSpaceCorrection = 0f;
     [SerializeField] private float hexagonTileZSpaceCorrection = 0.134f;
     [SerializeField] private float hexagonTileXOddOffset = 0.5f;
+    public HexagonTileTypes HexagonTileTypes;
+    public List<HexagonTileTypeSettings> HexagonTiles = new List<HexagonTileTypeSettings>();
 
     [Space(10)]
 
@@ -85,12 +87,12 @@ public class GridSystemV3_2 : MonoBehaviour
                 if (x >= InnerGrid.GridXStart && x <= InnerGrid.GridXEnd && z >= InnerGrid.GridZStart && z <= InnerGrid.GridZEnd) 
                 {
                     yValue = GetYValue(x, z, true);
-                    InstantiateHexagon(true, x, z, yValue);
+                    InstantiateHexagon(x, z, yValue, true);
                 }
                 else
                 {
                     yValue = GetYValue(x, z);
-                    InstantiateHexagon(false, x, z, yValue);
+                    InstantiateHexagon(x, z, yValue);
                 }
 
                 if (x == 0 && z == 0)
@@ -122,7 +124,7 @@ public class GridSystemV3_2 : MonoBehaviour
         return perlinNoise;
     }
 
-    private void InstantiateHexagon(bool isInnerGrid, int xPos, int zPos, float newHeight = 1)
+    private void InstantiateHexagon(int xPos, int zPos, float newHeight = 1, bool isInnerGrid = false)
     {
         if (hexagonParentPrefab == null) return;
         GameObject hexPrefab = hexagonParentPrefab;
@@ -153,14 +155,32 @@ public class GridSystemV3_2 : MonoBehaviour
     {
         for (int i = 0; i < outerGridTiles.Count; i++)
         {
-            outerGridTiles[i].SetTileType(OuterGrid.GetHexagonTileType(lowestHeight, highestHeight, outerGridTilesHeight[i]));
+            outerGridTiles[i].SetTileType(GetHexagonTileType(lowestHeight, highestHeight, outerGridTilesHeight[i]));
             outerGridTiles[i].UpdateTileType();
         }
 
         for (int i = 0; i < innerGridTiles.Count; i++)
         {
-            innerGridTiles[i].SetTileType(InnerGrid.GetHexagonTileType(lowestHeight, highestHeight, innerGridTilesHeight[i]));
+            innerGridTiles[i].SetTileType(GetHexagonTileType(lowestHeight, highestHeight, innerGridTilesHeight[i]));
             innerGridTiles[i].UpdateTileType();
         }
+    }
+    
+    private string GetHexagonTileType(float lowestHeight, float highestHeight, float currentHeight, bool isInnerGrid = false)
+    {
+        string nameOfTileType = "";
+        foreach (HexagonTileTypeSettings tile in HexagonTiles)
+        {
+            if (!isInnerGrid && tile.OuterGrid || isInnerGrid && tile.InnerGrid)
+            {
+                if (nameOfTileType == "") nameOfTileType = tile.Name;
+                else
+                {
+                    float heightLimit = lowestHeight + ((highestHeight - lowestHeight) * tile.Height);
+                    nameOfTileType = heightLimit > currentHeight ? tile.Name : nameOfTileType;
+                }
+            }
+        }
+        return nameOfTileType;
     }
 }

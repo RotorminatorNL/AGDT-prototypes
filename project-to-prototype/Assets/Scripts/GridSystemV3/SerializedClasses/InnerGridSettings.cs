@@ -14,10 +14,6 @@ public class InnerGridSettings
     [HideInInspector] public int GridZStart { get; private set; }
     [HideInInspector] public int GridZEnd { get; private set; }
 
-    [Space(10)]
-    public HexagonTileTypes HexagonTileTypes;
-    public List<HexagonTileTypeSettings> HexagonTiles = new List<HexagonTileTypeSettings>();
-
     public void CalculateBounds(OuterGridSettings grid)
     {
         GridXStart = (grid.GridXLength - GridXLength) / 2;
@@ -25,20 +21,5 @@ public class InnerGridSettings
 
         GridZStart = (grid.GridZLength - GridZLength) / 2;
         GridZEnd = GridZStart + GridZLength;
-    }
-
-    public string GetHexagonTileType(float lowestHeight, float highestHeight, float currentHeight)
-    {
-        string nameOfTileType = "";
-        foreach (HexagonTileTypeSettings tile in HexagonTiles)
-        {
-            if (nameOfTileType == "") nameOfTileType = tile.Name;
-            else
-            {
-                float heightLimit = lowestHeight + ((highestHeight - lowestHeight) * tile.Height);
-                nameOfTileType = heightLimit > currentHeight ? tile.Name : nameOfTileType;
-            }
-        }
-        return nameOfTileType;
     }
 }

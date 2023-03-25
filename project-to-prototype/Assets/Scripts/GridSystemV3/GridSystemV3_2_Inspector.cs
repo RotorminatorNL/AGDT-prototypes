@@ -12,15 +12,14 @@ public class GridSystemV3_2_Inspector : Editor
 
         GridSystemV3_2 gridSystem = (GridSystemV3_2)target;
 
-        gridSystem.OuterGrid.HexagonTiles = GetTileTypeChanceList(gridSystem.OuterGrid.HexagonTiles, gridSystem.OuterGrid.HexagonTileTypes);
-        gridSystem.InnerGrid.HexagonTiles = GetTileTypeChanceList(gridSystem.InnerGrid.HexagonTiles, gridSystem.InnerGrid.HexagonTileTypes);
+        gridSystem.HexagonTiles = GetTileTypeSettingsList(gridSystem.HexagonTiles, gridSystem.HexagonTileTypes);
 
         if (GUILayout.Button("(Re)Generate grid")) gridSystem.ActivateGenerateGrid();
         if (GUILayout.Button("Clear grid")) gridSystem.ClearGrid();
 
     }
 
-    private List<HexagonTileTypeSettings> GetTileTypeChanceList(List<HexagonTileTypeSettings> oldTileTypes, HexagonTileTypes newTileTypes)
+    private List<HexagonTileTypeSettings> GetTileTypeSettingsList(List<HexagonTileTypeSettings> oldTileTypes, HexagonTileTypes newTileTypes)
     {
         List<HexagonTileTypeSettings> temp = new List<HexagonTileTypeSettings>();
 
