@@ -155,32 +155,33 @@ public class GridSystemV3_2 : MonoBehaviour
     {
         for (int i = 0; i < outerGridTiles.Count; i++)
         {
-            outerGridTiles[i].SetTileType(GetHexagonTileType(lowestHeight, highestHeight, outerGridTilesHeight[i]));
+            outerGridTiles[i].SetTileType(GetHexagonTileType(outerGridTilesHeight[i]));
             outerGridTiles[i].UpdateTileType();
         }
 
         for (int i = 0; i < innerGridTiles.Count; i++)
         {
-            innerGridTiles[i].SetTileType(GetHexagonTileType(lowestHeight, highestHeight, innerGridTilesHeight[i]));
+            innerGridTiles[i].SetTileType(GetHexagonTileType(innerGridTilesHeight[i], true));
             innerGridTiles[i].UpdateTileType();
         }
     }
     
-    private string GetHexagonTileType(float lowestHeight, float highestHeight, float currentHeight, bool isInnerGrid = false)
+    private string GetHexagonTileType(float currentHeight, bool isInnerGrid = false)
     {
         string nameOfTileType = "";
         foreach (HexagonTileTypeSettings tile in HexagonTiles)
         {
             if (!isInnerGrid && tile.OuterGrid || isInnerGrid && tile.InnerGrid)
             {
-                if (nameOfTileType == "") nameOfTileType = tile.Name;
-                else
-                {
-                    float heightLimit = lowestHeight + ((highestHeight - lowestHeight) * tile.Height);
-                    nameOfTileType = heightLimit > currentHeight ? tile.Name : nameOfTileType;
-                }
+                if (nameOfTileType == "") nameOfTileType = IsBelowHeightLimits(tile.MaxHeight, currentHeight) ? tile.Name : nameOfTileType;
             }
         }
         return nameOfTileType;
+    }
+
+    private bool IsBelowHeightLimits(float maxHeightPercentage, float height)
+    {
+        float maxHeight = lowestHeight + ((highestHeight - lowestHeight) * maxHeightPercentage);
+        return height <= maxHeight;
     }
 }

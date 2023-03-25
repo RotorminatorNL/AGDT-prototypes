@@ -10,7 +10,7 @@ public class HexagonTileTypeSettings
     public string Name;
     public bool OuterGrid;
     public bool InnerGrid;
-    [Range(0f, 1f)] public float Height = 1f;
+    [Range(0f, 1f)] public float MaxHeight = 1f;
 
     public HexagonTileTypeSettings(string name)
     {
