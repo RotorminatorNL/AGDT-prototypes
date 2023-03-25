@@ -8,6 +8,8 @@ using UnityEngine;
 public class HexagonTileTypeSettings
 {
     public string Name;
+    public bool NoOverrideNextGen = false;
+    [Space(5)]
     public bool OuterGrid;
     public bool InnerGrid;
     [Range(0f, 1f)] public float MaxHeight = 1f;
