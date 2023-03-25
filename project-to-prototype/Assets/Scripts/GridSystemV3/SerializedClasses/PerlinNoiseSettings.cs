@@ -16,15 +16,13 @@ public class PerlinNoiseSettings
     [SerializeField, Range(0, 30)] private float outerYScale = 10f;
     [SerializeField, Range(0, 30)] private float innerYScale = 10f;
 
-    public float GetPerlinNoiseValue(float indexOfX, float indexOfZ, bool isInnerGrid = false)
+    public float GetPerlinNoiseValue(float x, float z, bool isInnerGrid = false)
     {
-        float perlinNoiseXCoord = indexOfX * xScale + xCoordOffset;
-        float perlinNoiseZCoord = indexOfZ * zScale + zCoordOffset;
+        float perlinNoiseXCoord = x * xScale + xCoordOffset;
+        float perlinNoiseZCoord = z * zScale + zCoordOffset;
 
         float scaleToUse = !isInnerGrid ? outerYScale : innerYScale;
 
         return Mathf.PerlinNoise(perlinNoiseXCoord, perlinNoiseZCoord) * scaleToUse;
-
-
     }
 }

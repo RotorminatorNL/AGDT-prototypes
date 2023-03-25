@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Unity.AI.Navigation;
+using UnityEditor.Rendering;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -13,7 +14,7 @@ public class GridSystemV3_2 : MonoBehaviour
     [SerializeField] private float hexagonTileXOddOffset = 0.5f;
 
     [Space(10)]
-    
+
     public OuterGridSettings OuterGrid;
     [Space(5)]
     [SerializeField] private TransitionSettings transitionSettings;
@@ -26,12 +27,19 @@ public class GridSystemV3_2 : MonoBehaviour
 
     public NavMeshSurface RoadMesh;
 
+    private List<HexagonTileSettings> outerGridTiles;
+    private List<float> outerGridTilesHeight;
+    private List<HexagonTileSettings> innerGridTiles;
+    private List<float> innerGridTilesHeight;
+    private float lowestHeight = 0;
+    private float highestHeight = 0;
+
     private void Awake()
     {
         InnerGrid.CalculateBounds(OuterGrid);
     }
 
-    public void GenerateGrid()
+    public void ActivateGenerateGrid()
     {
         if (!AbleToGenerate()) return;
 
@@ -40,10 +48,13 @@ public class GridSystemV3_2 : MonoBehaviour
         InnerGrid.CalculateBounds(OuterGrid);
         transitionSettings.CalculateBounds(InnerGrid);
 
-        OuterGrid.CreateHexagonTilePool();
-        InnerGrid.CreateHexagonTilePool();
-        GenerateOuterGrid();
-        GenerateInnerGrid();
+        outerGridTiles = new List<HexagonTileSettings>();
+        outerGridTilesHeight = new List<float>();
+        innerGridTiles = new List<HexagonTileSettings>();
+        innerGridTilesHeight = new List<float>();
+
+        GenerateGrid();
+        ColoringGrid();
 
         RoadMesh.BuildNavMesh();
 
@@ -64,30 +75,34 @@ public class GridSystemV3_2 : MonoBehaviour
         RoadMesh.BuildNavMesh();
     }
 
-    private void GenerateOuterGrid()
+    private void GenerateGrid()
     {
         for (int z = 0; z < OuterGrid.GridZLength; z++)
         {
             for (int x = 0; x < OuterGrid.GridXLength; x++)
             {
-                if (x >= InnerGrid.GridXStart && x <= InnerGrid.GridXEnd && z >= InnerGrid.GridZStart && z <= InnerGrid.GridZEnd) { /* skip 'm */ }
+                float yValue;
+                if (x >= InnerGrid.GridXStart && x <= InnerGrid.GridXEnd && z >= InnerGrid.GridZStart && z <= InnerGrid.GridZEnd) 
+                {
+                    yValue = GetYValue(x, z, true);
+                    InstantiateHexagon(true, x, z, yValue);
+                }
                 else
                 {
-                    InstantiateHexagon(OuterGrid.GetHexagonTileType(), x, z, GetYValue(x, z));
+                    yValue = GetYValue(x, z);
+                    InstantiateHexagon(false, x, z, yValue);
                 }
-            }
-        }
-    }
 
-    private void GenerateInnerGrid()
-    {
-        int newHexagonTerrainZLength = InnerGrid.GridZEnd + Mathf.CeilToInt(InnerGrid.GridZLength * hexagonTileZSpaceCorrection) + 1;
-
-        for (int z = InnerGrid.GridZStart; z < newHexagonTerrainZLength; z++)
-        {
-            for (int x = InnerGrid.GridXStart; x < InnerGrid.GridXEnd + 1; x++)
-            {
-                InstantiateHexagon(InnerGrid.GetHexagonTileType(), x, z, GetYValue(x, z, true));
+                if (x == 0 && z == 0)
+                {
+                    lowestHeight = yValue;
+                    highestHeight = yValue;
+                }
+                else
+                {
+                    lowestHeight = yValue < lowestHeight ? yValue : lowestHeight;
+                    highestHeight = yValue > highestHeight ? yValue : highestHeight;
+                }
             }
         }
     }
@@ -107,15 +122,22 @@ public class GridSystemV3_2 : MonoBehaviour
         return perlinNoise;
     }
 
-    private void InstantiateHexagon(string tileType, int xPos, int zPos, float newHeight = 1)
+    private void InstantiateHexagon(bool isInnerGrid, int xPos, int zPos, float newHeight = 1)
     {
         if (hexagonParentPrefab == null) return;
         GameObject hexPrefab = hexagonParentPrefab;
         GameObject hex = Instantiate(hexPrefab, new Vector3(0, 0, 0), Quaternion.identity, transform);
 
-        HexagonTileSettings hexagonTileSetting = hex.GetComponent<HexagonTileSettings>();
-        hexagonTileSetting.SetTileType(tileType);
-        hexagonTileSetting.UpdateTileType();
+        if (isInnerGrid)
+        {
+            innerGridTiles.Add(hex.GetComponent<HexagonTileSettings>());
+            innerGridTilesHeight.Add(newHeight);
+        }
+        else
+        {
+            outerGridTiles.Add(hex.GetComponent<HexagonTileSettings>());
+            outerGridTilesHeight.Add(newHeight);
+        }
 
         float x = xPos;
         float z = zPos - ((zPos - InnerGrid.GridZStart) * hexagonTileZSpaceCorrection);
@@ -127,4 +149,18 @@ public class GridSystemV3_2 : MonoBehaviour
         hex.name = $"Hex coord {xPos},{zPos}";
     }
 
+    private void ColoringGrid()
+    {
+        for (int i = 0; i < outerGridTiles.Count; i++)
+        {
+            outerGridTiles[i].SetTileType(OuterGrid.GetHexagonTileType(lowestHeight, highestHeight, outerGridTilesHeight[i]));
+            outerGridTiles[i].UpdateTileType();
+        }
+
+        for (int i = 0; i < innerGridTiles.Count; i++)
+        {
+            innerGridTiles[i].SetTileType(InnerGrid.GetHexagonTileType(lowestHeight, highestHeight, innerGridTilesHeight[i]));
+            innerGridTiles[i].UpdateTileType();
+        }
+    }
 }

@@ -9,27 +9,23 @@ public class OuterGridSettings
     [Header("Recommended: 6.400 (example: 80 * 80) or less")]
     [Min(1)] public int GridXLength = 80;
     [Min(1)] public int GridZLength = 80;
+
     [Space(10)]
     public HexagonTileTypes HexagonTileTypes;
     public List<HexagonTileTypeSettings> HexagonTiles = new List<HexagonTileTypeSettings>();
-    private List<int> hexagonTilePool;
 
-    public void CreateHexagonTilePool()
+    public string GetHexagonTileType(float lowestHeight, float highestHeight, float currentHeight)
     {
-        if (HexagonTileTypes == null) return;
-
-        hexagonTilePool = new List<int>();
-        for (int i = 0; i < HexagonTiles.Count; i++)
+        string nameOfTileType = "";
+        foreach (HexagonTileTypeSettings tile in HexagonTiles)
         {
-            for (int j = 0; j < (HexagonTiles[i].Chance * 10); j++)
+            if (nameOfTileType == "") nameOfTileType = tile.Name;
+            else
             {
-                hexagonTilePool.Add(i);
+                float heightLimit = lowestHeight + ((highestHeight - lowestHeight) * tile.Height);
+                nameOfTileType = heightLimit > currentHeight ? tile.Name : nameOfTileType;
             }
         }
-    }
-
-    public string GetHexagonTileType()
-    {
-        return HexagonTileTypes.Types[hexagonTilePool[Random.Range(0, hexagonTilePool.Count)]].Name;
+        return nameOfTileType;
     }
 }

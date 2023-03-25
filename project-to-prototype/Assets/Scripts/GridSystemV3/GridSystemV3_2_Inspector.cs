@@ -15,7 +15,7 @@ public class GridSystemV3_2_Inspector : Editor
         gridSystem.OuterGrid.HexagonTiles = GetTileTypeChanceList(gridSystem.OuterGrid.HexagonTiles, gridSystem.OuterGrid.HexagonTileTypes);
         gridSystem.InnerGrid.HexagonTiles = GetTileTypeChanceList(gridSystem.InnerGrid.HexagonTiles, gridSystem.InnerGrid.HexagonTileTypes);
 
-        if (GUILayout.Button("(Re)Generate grid")) gridSystem.GenerateGrid();
+        if (GUILayout.Button("(Re)Generate grid")) gridSystem.ActivateGenerateGrid();
         if (GUILayout.Button("Clear grid")) gridSystem.ClearGrid();
 
     }

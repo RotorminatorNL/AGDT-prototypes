@@ -8,7 +8,7 @@ using UnityEngine;
 public class HexagonTileTypeSettings
 {
     public string Name;
-    [Range(0f, 1f)] public float Chance = 1f;
+    [Range(0f, 1f)] public float Height = 1f;
 
     public HexagonTileTypeSettings(string name)
     {
