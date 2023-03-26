@@ -33,7 +33,7 @@ public class HexagonTileSettings : MonoBehaviour
 
     private void Update()
     {
-        if (TileTypes == null || !hasSpawned || selectedTileTypeIndex == 0 || previousTileTypeIndex == selectedTileTypeIndex) return;
+        if (TileTypes == null || !hasSpawned || previousTileTypeIndex == selectedTileTypeIndex) return;
         UpdateTileType();
         previousTileTypeIndex = selectedTileTypeIndex;
         gridSystem.RoadMesh.BuildNavMesh();

@@ -16,7 +16,6 @@ public class GridSystemV3_2_Inspector : Editor
 
         if (GUILayout.Button("(Re)Generate grid")) gridSystem.ActivateGenerateGrid();
         if (GUILayout.Button("Clear grid")) gridSystem.ClearGrid();
-
     }
 
     private List<HexagonTileTypeSettings> GetTileTypeSettingsList(List<HexagonTileTypeSettings> oldTileTypes, HexagonTileTypes newTileTypes)
