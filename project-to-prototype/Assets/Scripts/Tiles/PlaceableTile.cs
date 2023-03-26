@@ -4,5 +4,5 @@ using UnityEngine;
 
 public class PlaceableTile : MonoBehaviour
 {
-    private void Start() { /* sweg script*/ }
+    private void Start() { /* sweg script */ }
 }

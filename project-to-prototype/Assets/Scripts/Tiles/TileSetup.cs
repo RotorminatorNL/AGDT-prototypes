@@ -4,9 +4,9 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 [ExecuteInEditMode]
-public class HexagonTileSettings : MonoBehaviour
+public class TileSetup : MonoBehaviour
 {
-    public HexagonTileTypes TileTypes;
+    public TileTypeCollection TileTypes;
     private bool hasSpawned = false;
 
     [SerializeField] private MeshFilter meshFilter;
@@ -25,18 +25,18 @@ public class HexagonTileSettings : MonoBehaviour
         gridSystem = GetComponentInParent<GridSystemV3_2>();
         hasSpawned = true;
 
-        HexagonTileInfo hexagonTileInfo = GetComponentInChildren<HexagonTileInfo>();
-        if (hexagonTileInfo == null) return;
-        selectedTileTypeIndex = TileTypes.Types.FindIndex(type => type.Name == hexagonTileInfo.HexagonTileType.Name);
+        TileInfo tileInfo = GetComponentInChildren<TileInfo>();
+        if (tileInfo == null) return;
+        selectedTileTypeIndex = TileTypes.Types.FindIndex(type => type.Name == tileInfo.TileType.Name);
         previousTileTypeIndex = selectedTileTypeIndex;
     }
 
     private void Update()
     {
         if (TileTypes == null || !hasSpawned || previousTileTypeIndex == selectedTileTypeIndex) return;
-        UpdateTileType();
+        UpdateTile();
         previousTileTypeIndex = selectedTileTypeIndex;
-        gridSystem.RoadMesh.BuildNavMesh();
+        gridSystem.NavMeshRoad.BuildNavMesh();
         EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
     }
 
@@ -47,9 +47,9 @@ public class HexagonTileSettings : MonoBehaviour
         hasSpawned = true;
     }
 
-    public void UpdateTileType()
+    public void UpdateTile()
     {
-        HexagonTileType selectedTile = TileTypes.Types[selectedTileTypeIndex];
+        TileType selectedTile = TileTypes.Types[selectedTileTypeIndex];
         int layer = (int)Mathf.Log(selectedTile.LayerMask.value, 2);
         gameObject.layer = layer;
         meshFilter.mesh = selectedTile.Mesh;

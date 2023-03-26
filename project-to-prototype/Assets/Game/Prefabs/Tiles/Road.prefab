@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7805860827552921715}
-  - component: {fileID: 5834627965362904553}
-  m_Layer: 0
-  m_Name: Water
+  - component: {fileID: 1902595162003116156}
+  m_Layer: 6
+  m_Name: Road
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32,7 +32,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5834627965362904553
+--- !u!114 &1902595162003116156
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -44,4 +44,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d21a383e6129a4842bd3e5d77de837e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hexagonTileType: {fileID: 11400000, guid: 532e8bc5c29be9b4fb04e700361cf503, type: 2}
+  tileType: {fileID: 11400000, guid: 39af2b202f9653e4693faa929c3d26e1, type: 2}

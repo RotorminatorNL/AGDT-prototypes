@@ -6,15 +6,15 @@ using UnityEngine;
 public class InnerGridSettings
 {
     [Header("Grid size")]
-    public int GridXLength = 50;
+    public int GridXLength = 20;
     [HideInInspector] public int GridXStart { get; private set; }
     [HideInInspector] public int GridXEnd { get; private set; }
 
-    public int GridZLength = 30;
+    public int GridZLength = 18;
     [HideInInspector] public int GridZStart { get; private set; }
     [HideInInspector] public int GridZEnd { get; private set; }
 
-    public void CalculateBounds(OuterGridSettings grid)
+    public void CalculateBorders(OuterGridSettings grid)
     {
         GridXStart = (grid.GridXLength - GridXLength) / 2;
         GridXEnd = GridXStart + GridXLength;

@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8fd46c3160d475542aa6dda4c32f2593, type: 3}
-  m_Name: Parent
+  m_Name: TileParent
   m_EditorClassIdentifier: 
-  Name: Parent
-  PoolKey: Parent
+  Name: TileParent
+  PoolKey: TileParent
   Prefab: {fileID: 1692578891167136568, guid: 9f6c4504d2d39354cbff663779335f71, type: 3}
   LayerMask:
     serializedVersion: 2

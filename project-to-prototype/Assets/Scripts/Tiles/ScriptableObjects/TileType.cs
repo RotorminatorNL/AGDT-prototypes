@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "TileType", menuName = "Grid system/Tile type")]
-public class HexagonTileType : ScriptableObject
+public class TileType : ScriptableObject
 {
     public string Name;
     public string PoolKey;

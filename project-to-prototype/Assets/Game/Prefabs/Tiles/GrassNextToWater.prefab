@@ -44,4 +44,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d21a383e6129a4842bd3e5d77de837e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hexagonTileType: {fileID: 11400000, guid: 78918d5af4cc4e84988a801741143191, type: 2}
+  tileType: {fileID: 11400000, guid: 78918d5af4cc4e84988a801741143191, type: 2}

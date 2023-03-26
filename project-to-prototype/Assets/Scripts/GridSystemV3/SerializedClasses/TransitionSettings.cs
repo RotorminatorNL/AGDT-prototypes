@@ -19,7 +19,7 @@ public class TransitionSettings
     private int gridZTopStart;
     private int gridZTopEnd;
 
-    public void CalculateBounds(InnerGridSettings innerGrid)
+    public void CalculateBorders(InnerGridSettings innerGrid)
     {
         gridXLeftStart = innerGrid.GridXStart - Length;
         gridXLeftEnd = innerGrid.GridXStart;
@@ -34,38 +34,21 @@ public class TransitionSettings
 
     public float GetTransitionPercentage(int x, int z)
     {
-        float percentage = 1f;
-
         if ((gridXLeftStart > x || gridXRightEnd < x) && (gridZBottomEnd > z || gridZTopEnd < z)) return 1;
 
-        if (gridXLeftStart < x && gridXLeftEnd >= x) 
-        {
-            float xPercentage = (float)(gridXLeftEnd - x) / Length;
-            float zBottomPercentage = (float)(gridZBottomEnd - z) / Length;
-            float zTopPercentage = (float)(z - gridZTopStart) / Length;
+        float xPercentage = 1f;
+        float zBottomPercentage = (float)(gridZBottomEnd - z) / Length;
+        float zTopPercentage = (float)(z - gridZTopStart) / Length;
 
-            if (gridZBottomEnd < z && gridZTopStart > z) return xPercentage;
-            if (gridZBottomStart < z && gridZBottomEnd >= z) return xPercentage >= zBottomPercentage ? xPercentage : zBottomPercentage;
-            if (gridZTopStart <= z && gridZTopEnd > z) return xPercentage >= zTopPercentage ? xPercentage : zTopPercentage;
-        }
-        else if (gridXRightStart <= x && gridXRightEnd > x)
-        {
-            float xPercentage = (float)(x - gridXRightStart) / Length;
-            float zBottomPercentage = (float)(gridZBottomEnd - z) / Length;
-            float zTopPercentage = (float)(z - gridZTopStart) / Length;
+        if (gridXLeftStart < x && gridXLeftEnd >= x) xPercentage = (float)(gridXLeftEnd - x) / Length;
+        else if (gridXRightStart <= x && gridXRightEnd > x) xPercentage = (float)(x - gridXRightStart) / Length;
+        else if (gridZBottomStart < z && gridZBottomEnd > z && gridXLeftEnd < x && gridXRightStart > x) return zBottomPercentage;
+        else if (gridZTopStart < z && gridZTopEnd > z && gridXLeftEnd < x && gridXRightStart > x) return zTopPercentage;
 
-            if (gridZBottomEnd < z && gridZTopStart > z) return xPercentage;
-            if (gridZBottomStart < z && gridZBottomEnd >= z) return xPercentage >= zBottomPercentage ? xPercentage : zBottomPercentage;
-            if (gridZTopStart <= z && gridZTopEnd > z) return xPercentage >= zTopPercentage ? xPercentage : zTopPercentage;
-        }
-        else if (gridZBottomStart < z && gridZBottomEnd > z)
-        {
-            if (gridXLeftEnd < x && gridXRightStart > x) return (float)(gridZBottomEnd - z) / Length;
-        }
-        else if (gridZTopStart < z && gridZTopEnd > z)
-        {
-            if (gridXLeftEnd < x && gridXRightStart > x) return (float)(z - gridZTopStart) / Length;
-        }
-        return percentage;
+        if (gridZBottomEnd < z && gridZTopStart > z) return xPercentage;
+        if (gridZBottomStart < z && gridZBottomEnd >= z) return xPercentage >= zBottomPercentage ? xPercentage : zBottomPercentage;
+        if (gridZTopStart <= z && gridZTopEnd > z) return xPercentage >= zTopPercentage ? xPercentage : zTopPercentage;
+
+        return 1;
     }
 }
