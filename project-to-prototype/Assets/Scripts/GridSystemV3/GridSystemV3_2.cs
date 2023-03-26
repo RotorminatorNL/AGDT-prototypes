@@ -72,20 +72,20 @@ public class GridSystemV3_2 : MonoBehaviour
             for (int x = 0; x < OuterGridSettings.GridXLength; x++)
             {
                 bool innerGrid = InnerGridSettings.IsInside(x, z);
-                float newHeightValue = GetHeightValue(x, z, innerGrid);
+                float heightValue = GetHeightValue(x, z, innerGrid);
 
-                GameObject generatedTile = InstantiateTile(x, z, newHeightValue);
-                gridSystemDB.StoreTile(generatedTile.name, generatedTile.GetComponent<TileSetup>(), newHeightValue, !innerGrid, innerGrid);
+                GameObject generatedTile = InstantiateTile(x, z, heightValue);
+                gridSystemDB.StoreTile(generatedTile.name, generatedTile.GetComponent<TileSetup>(), heightValue, !innerGrid, innerGrid);
 
                 if (x == 0 && z == 0)
                 {
-                    lowestHeight = newHeightValue;
-                    highestHeight = newHeightValue;
+                    lowestHeight = heightValue;
+                    highestHeight = heightValue;
                 }
                 else
                 {
-                    lowestHeight = newHeightValue < lowestHeight ? newHeightValue : lowestHeight;
-                    highestHeight = newHeightValue > highestHeight ? newHeightValue : highestHeight;
+                    lowestHeight = heightValue < lowestHeight ? heightValue : lowestHeight;
+                    highestHeight = heightValue > highestHeight ? heightValue : highestHeight;
                 }
             }
         }
