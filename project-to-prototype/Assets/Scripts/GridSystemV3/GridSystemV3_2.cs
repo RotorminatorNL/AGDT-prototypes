@@ -103,30 +103,30 @@ public class GridSystemV3_2 : MonoBehaviour
     private float GetHeightValue(int xPos, int zPos, bool insideInnerGrid)
     {
         float transitionPercentage = transitionSettings.GetTransitionPercentage(xPos, zPos);
-        float perlinNoise;
+        float perlinNoiseHeight;
         if (!insideInnerGrid && transitionPercentage != 1)
         {
             float outerPerlinNoise = perlinNoiseSettings.GetPerlinNoiseValue(xPos, zPos);
             float innerPerlinNoise = perlinNoiseSettings.GetPerlinNoiseValue(xPos, zPos, true);
-            perlinNoise = innerPerlinNoise + ((outerPerlinNoise - innerPerlinNoise) * transitionPercentage);
+            perlinNoiseHeight = innerPerlinNoise + ((outerPerlinNoise - innerPerlinNoise) * transitionPercentage);
         }
         else
         {
-            perlinNoise = perlinNoiseSettings.GetPerlinNoiseValue(xPos, zPos, insideInnerGrid);
+            perlinNoiseHeight = perlinNoiseSettings.GetPerlinNoiseValue(xPos, zPos, insideInnerGrid);
         }
 
         if (xPos == 0 && zPos == 0)
         {
-            lowestHeight = perlinNoise;
-            highestHeight = perlinNoise;
+            lowestHeight = perlinNoiseHeight;
+            highestHeight = perlinNoiseHeight;
         }
         else
         {
-            lowestHeight = perlinNoise < lowestHeight ? perlinNoise : lowestHeight;
-            highestHeight = perlinNoise > highestHeight ? perlinNoise : highestHeight;
+            lowestHeight = perlinNoiseHeight < lowestHeight ? perlinNoiseHeight : lowestHeight;
+            highestHeight = perlinNoiseHeight > highestHeight ? perlinNoiseHeight : highestHeight;
         }
 
-        return perlinNoise;
+        return perlinNoiseHeight;
     }
 
     private void InstantiateTile(int xPos, int zPos, float newHeight = 1)
@@ -159,7 +159,7 @@ public class GridSystemV3_2 : MonoBehaviour
         string tileTypeName = "";
         foreach (TileTypeSettings tileTypeSetting in TileTypeSettings)
         {
-            if (tileTypeName == "" && !tileTypeSetting.NoOverrideNextGen && (outerGrid && tileTypeSetting.OuterGrid || innerGrid && tileTypeSetting.InnerGrid))
+            if (tileTypeName == "" && !tileTypeSetting.SkipNextGen && (outerGrid && tileTypeSetting.OuterGrid || innerGrid && tileTypeSetting.InnerGrid))
             {
                 tileTypeName = tileTypeSetting.IsHeightBelowMaxHeight(currentHeight, lowestHeight, highestHeight) ? tileTypeSetting.Name : tileTypeName;
             }
