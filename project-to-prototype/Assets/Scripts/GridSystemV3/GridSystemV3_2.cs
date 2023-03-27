@@ -146,11 +146,20 @@ public class GridSystemV3_2 : MonoBehaviour
         for (int i = 0; i < gridSystemDB.Tiles.Count; i++)
         {
             GridTileInfo tileInfo = gridSystemDB.Tiles[i];
-            string tileTypeName = GetTileTypeName(tileInfo.Height, tileInfo.OuterGrid, tileInfo.InnerGrid);
-
             TileSetup tileSetup = transform.GetChild(i).GetComponent<TileSetup>();
-            tileSetup.SetTileType(tileTypeName);
-            tileSetup.UpdateTile();
+
+            bool skipTile = false;
+            for (int j = 0; j < TileTypeSettings.Count; j++)
+            {
+                TileTypeSettings tileTypeSettings = TileTypeSettings[j];
+                if (tileSetup.SelectedTileTypeIndex == j && tileTypeSettings.SkipNextGen) skipTile = true;
+            }
+            if (!skipTile)
+            {
+                string tileTypeName = GetTileTypeName(tileInfo.Height, tileInfo.OuterGrid, tileInfo.InnerGrid);
+                tileSetup.SetTileType(tileTypeName);
+                tileSetup.UpdateTile();
+            }
         }
     }
     
