@@ -19,7 +19,7 @@ public class GridSystemV3_2 : MonoBehaviour
     [SerializeField] private float tileZSpaceCorrection = 0.3f;
     [SerializeField] private float tileXOddOffset = 0.75f;
     public TileTypeCollection TileTypes;
-    public List<TileTypeSettings> TileTypeSettings = new List<TileTypeSettings>();
+    public List<TileTypeSettings> TileTypeSettings;
 
     [Space(5)] public OuterGridSettings OuterGridSettings;
     [Space(5)] [SerializeField] private TransitionSettings transitionSettings;
@@ -52,7 +52,7 @@ public class GridSystemV3_2 : MonoBehaviour
 
     private bool AbleToGenerate()
     {
-        bool outerGridSizeWrong = OuterGridSettings.GridXLength <= 0 || OuterGridSettings.GridZLength <= 0;
+        bool outerGridSizeWrong = OuterGridSettings.GridXLength <= 1 || OuterGridSettings.GridZLength <= 1;
         bool innerGridSizeWrong = InnerGridSettings.GridXLength <= 0 || InnerGridSettings.GridZLength <= 0;
         if (gridSystemDB == null || tileParentPrefab == null || outerGridSizeWrong || innerGridSizeWrong || transitionSettings.Length <= 0) return false;
         return true;
@@ -67,17 +67,17 @@ public class GridSystemV3_2 : MonoBehaviour
 
     private void GenerateTypelessTiles()
     {
-        for (int z = 0; z < OuterGridSettings.GridZLength; z++)
+        for (int zPos = 0; zPos < OuterGridSettings.GridZLength; zPos++)
         {
-            for (int x = 0; x < OuterGridSettings.GridXLength; x++)
+            for (int xPos = 0; xPos < OuterGridSettings.GridXLength; xPos++)
             {
-                bool innerGrid = InnerGridSettings.IsInside(x, z);
-                float heightValue = GetHeightValue(x, z, innerGrid);
+                bool innerGrid = InnerGridSettings.IsInside(xPos, zPos);
+                float heightValue = GetHeightValue(xPos, zPos, innerGrid);
 
-                GameObject generatedTile = InstantiateTile(x, z, heightValue);
+                GameObject generatedTile = InstantiateTile(xPos, zPos, heightValue);
                 gridSystemDB.StoreTile(generatedTile.name, generatedTile.GetComponent<TileSetup>(), heightValue, !innerGrid, innerGrid);
 
-                if (x == 0 && z == 0)
+                if (xPos == 0 && zPos == 0)
                 {
                     lowestHeight = heightValue;
                     highestHeight = heightValue;
@@ -91,27 +91,27 @@ public class GridSystemV3_2 : MonoBehaviour
         }
     }
 
-    private float GetHeightValue(int x, int z, bool insideInnerGrid)
+    private float GetHeightValue(int xPos, int zPos, bool insideInnerGrid)
     {
-        float transitionPercentage = transitionSettings.GetTransitionPercentage(x, z);
+        float transitionPercentage = transitionSettings.GetTransitionPercentage(xPos, zPos);
         if (!insideInnerGrid && transitionPercentage != 1)
         {
-            float outerPerlinNoise = perlinNoiseSettings.GetPerlinNoiseValue(x, z);
-            float innerPerlinNoise = perlinNoiseSettings.GetPerlinNoiseValue(x, z, true);
+            float outerPerlinNoise = perlinNoiseSettings.GetPerlinNoiseValue(xPos, zPos);
+            float innerPerlinNoise = perlinNoiseSettings.GetPerlinNoiseValue(xPos, zPos, true);
             return innerPerlinNoise + ((outerPerlinNoise - innerPerlinNoise) * transitionPercentage);
         }
-        float perlinNoise = perlinNoiseSettings.GetPerlinNoiseValue(x, z, insideInnerGrid);
+        float perlinNoise = perlinNoiseSettings.GetPerlinNoiseValue(xPos, zPos, insideInnerGrid);
         return perlinNoise;
     }
 
     private GameObject InstantiateTile(int xPos, int zPos, float newHeight = 1)
     {
-        float x = xPos + ((xPos - InnerGridSettings.GridXStart) * tileXSpaceCorrection);
-        float z = zPos + ((zPos - InnerGridSettings.GridZStart) * tileZSpaceCorrection);
-        if (zPos % 2 == 1) x += tileXOddOffset;
+        float xActualPos = xPos + ((xPos - InnerGridSettings.GridXStart) * tileXSpaceCorrection);
+        float zActualPos = zPos + ((zPos - InnerGridSettings.GridZStart) * tileZSpaceCorrection);
+        if (zPos % 2 == 1) xActualPos += tileXOddOffset;
 
         GameObject tile = Instantiate(tileParentPrefab, new Vector3(0, 0, 0), Quaternion.identity, transform);
-        tile.transform.localPosition = new Vector3(x, 0, z);
+        tile.transform.localPosition = new Vector3(xActualPos, 0, zActualPos);
         tile.transform.localScale = new Vector3(tile.transform.localScale.x, newHeight, tile.transform.localScale.z);
         tile.name = $"Hex coord {xPos},{zPos}";
         return tile;
