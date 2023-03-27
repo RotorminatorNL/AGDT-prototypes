@@ -38,12 +38,18 @@ public class GridSystemV3_2 : MonoBehaviour
     {
         if (!AbleToGenerate()) return;
 
-        ClearGrid();
-
         InnerGridSettings.CalculateBorders(OuterGridSettings);
         transitionSettings.CalculateBorders(InnerGridSettings);
 
-        GenerateTypelessTiles();
+        bool gridLengthsSame = gridSystemDB.CompareGridLengths(OuterGridSettings.GridXLength, OuterGridSettings.GridZLength);
+        if (!gridLengthsSame)
+        {
+            ClearGrid();
+            gridSystemDB.StoreGridLengths(OuterGridSettings.GridXLength, OuterGridSettings.GridZLength);
+            GenerateTypelessTiles();
+        }
+        else UpdateGeneratedTiles();
+
         SetTypeOfTiles();
 
         NavMeshRoad.BuildNavMesh();
@@ -61,7 +67,7 @@ public class GridSystemV3_2 : MonoBehaviour
     public void ClearGrid()
     {
         for (int i = transform.childCount - 1; i >= 0; i--) DestroyImmediate(transform.GetChild(i).gameObject);
-        gridSystemDB.ClearAllTiles();
+        gridSystemDB.ClearInfo();
         NavMeshRoad.BuildNavMesh();
     }
 
@@ -74,37 +80,56 @@ public class GridSystemV3_2 : MonoBehaviour
                 bool innerGrid = InnerGridSettings.IsInside(xPos, zPos);
                 float heightValue = GetHeightValue(xPos, zPos, innerGrid);
 
-                GameObject generatedTile = InstantiateTile(xPos, zPos, heightValue);
-                gridSystemDB.StoreTile(generatedTile.name, generatedTile.GetComponent<TileSetup>(), heightValue, !innerGrid, innerGrid);
-
-                if (xPos == 0 && zPos == 0)
-                {
-                    lowestHeight = heightValue;
-                    highestHeight = heightValue;
-                }
-                else
-                {
-                    lowestHeight = heightValue < lowestHeight ? heightValue : lowestHeight;
-                    highestHeight = heightValue > highestHeight ? heightValue : highestHeight;
-                }
+                InstantiateTile(xPos, zPos, heightValue);
+                gridSystemDB.StoreTile(xPos, zPos, heightValue, !innerGrid, innerGrid);
             }
+        }
+    }
+
+    private void UpdateGeneratedTiles()
+    {
+        for (int i = 0; i < gridSystemDB.Tiles.Count; i++)
+        {
+            GridTileInfo tileInfo = gridSystemDB.Tiles[i];
+            bool innerGrid = InnerGridSettings.IsInside(tileInfo.XPos, tileInfo.ZPos);
+            float heightValue = GetHeightValue(tileInfo.XPos, tileInfo.ZPos, innerGrid);
+
+            Transform tile = transform.GetChild(i);
+            tile.localScale = new Vector3(tile.localScale.x, heightValue, tile.localScale.z);
+            tileInfo.UpdateTileInfo(heightValue, !innerGrid, innerGrid);
         }
     }
 
     private float GetHeightValue(int xPos, int zPos, bool insideInnerGrid)
     {
         float transitionPercentage = transitionSettings.GetTransitionPercentage(xPos, zPos);
+        float perlinNoise;
         if (!insideInnerGrid && transitionPercentage != 1)
         {
             float outerPerlinNoise = perlinNoiseSettings.GetPerlinNoiseValue(xPos, zPos);
             float innerPerlinNoise = perlinNoiseSettings.GetPerlinNoiseValue(xPos, zPos, true);
-            return innerPerlinNoise + ((outerPerlinNoise - innerPerlinNoise) * transitionPercentage);
+            perlinNoise = innerPerlinNoise + ((outerPerlinNoise - innerPerlinNoise) * transitionPercentage);
         }
-        float perlinNoise = perlinNoiseSettings.GetPerlinNoiseValue(xPos, zPos, insideInnerGrid);
+        else
+        {
+            perlinNoise = perlinNoiseSettings.GetPerlinNoiseValue(xPos, zPos, insideInnerGrid);
+        }
+
+        if (xPos == 0 && zPos == 0)
+        {
+            lowestHeight = perlinNoise;
+            highestHeight = perlinNoise;
+        }
+        else
+        {
+            lowestHeight = perlinNoise < lowestHeight ? perlinNoise : lowestHeight;
+            highestHeight = perlinNoise > highestHeight ? perlinNoise : highestHeight;
+        }
+
         return perlinNoise;
     }
 
-    private GameObject InstantiateTile(int xPos, int zPos, float newHeight = 1)
+    private void InstantiateTile(int xPos, int zPos, float newHeight = 1)
     {
         float xActualPos = xPos + ((xPos - InnerGridSettings.GridXStart) * tileXSpaceCorrection);
         float zActualPos = zPos + ((zPos - InnerGridSettings.GridZStart) * tileZSpaceCorrection);
@@ -114,27 +139,29 @@ public class GridSystemV3_2 : MonoBehaviour
         tile.transform.localPosition = new Vector3(xActualPos, 0, zActualPos);
         tile.transform.localScale = new Vector3(tile.transform.localScale.x, newHeight, tile.transform.localScale.z);
         tile.name = $"Hex coord {xPos},{zPos}";
-        return tile;
     }
 
     private void SetTypeOfTiles()
     {
         for (int i = 0; i < gridSystemDB.Tiles.Count; i++)
         {
-            string tileTypeName = GetTileTypeName(gridSystemDB.Tiles[i].Height, gridSystemDB.Tiles[i].OuterGrid, gridSystemDB.Tiles[i].InnerGrid);
-            gridSystemDB.Tiles[i].TileSettings.SetTileType(tileTypeName);
-            gridSystemDB.Tiles[i].TileSettings.UpdateTile();
+            GridTileInfo tileInfo = gridSystemDB.Tiles[i];
+            string tileTypeName = GetTileTypeName(tileInfo.Height, tileInfo.OuterGrid, tileInfo.InnerGrid);
+
+            TileSetup tileSetup = transform.GetChild(i).GetComponent<TileSetup>();
+            tileSetup.SetTileType(tileTypeName);
+            tileSetup.UpdateTile();
         }
     }
     
     private string GetTileTypeName(float currentHeight, bool outerGrid, bool innerGrid)
     {
         string tileTypeName = "";
-        foreach (TileTypeSettings tile in TileTypeSettings)
+        foreach (TileTypeSettings tileTypeSetting in TileTypeSettings)
         {
-            if (tileTypeName == "" && (outerGrid && tile.OuterGrid || innerGrid && tile.InnerGrid))
+            if (tileTypeName == "" && !tileTypeSetting.NoOverrideNextGen && (outerGrid && tileTypeSetting.OuterGrid || innerGrid && tileTypeSetting.InnerGrid))
             {
-                tileTypeName = tile.IsHeightBelowMaxHeight(currentHeight, lowestHeight, highestHeight) ? tile.Name : tileTypeName;
+                tileTypeName = tileTypeSetting.IsHeightBelowMaxHeight(currentHeight, lowestHeight, highestHeight) ? tileTypeSetting.Name : tileTypeName;
             }
         }
         return tileTypeName;

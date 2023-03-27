@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,35 +6,57 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "GridSystemDB", menuName = "Grid system/Database")]
 public class GridSystemDB : ScriptableObject
 {
-    public IReadOnlyList<GridTileInfo> Tiles { get { return tiles; } }
-    private List<GridTileInfo> tiles;
     private int currentXLength;
     private int currentZLength;
+    public IReadOnlyList<GridTileInfo> Tiles { get { return tiles; } }
+    private List<GridTileInfo> tiles;
 
-    public void StoreTile(string name, TileSetup tileSettings, float height, bool outerGrid, bool innerGrid)
+    public void StoreGridLengths(int xLength, int zLength)
     {
-        tiles ??= new List<GridTileInfo>();
-        tiles.Add(new GridTileInfo(name, tileSettings, height, outerGrid, innerGrid));
+        currentXLength = xLength;
+        currentZLength = zLength;
     }
 
-    public void ClearAllTiles()
+    public bool CompareGridLengths(int xLength, int zLength)
     {
+        if (currentXLength == xLength && currentZLength == zLength) return true;
+        return false;
+    }
+
+    public void StoreTile(int xPos, int zPos, float height, bool outerGrid, bool innerGrid)
+    {
+        tiles ??= new List<GridTileInfo>();
+        tiles.Add(new GridTileInfo(xPos, zPos, height, outerGrid, innerGrid));
+    }
+
+    public void ClearInfo()
+    {
+        currentXLength = 0;
+        currentZLength = 0;
         tiles = new List<GridTileInfo>();
     }
 }
 
+[Serializable]
 public class GridTileInfo
 {
-    public string Name;
-    public TileSetup TileSettings;
-    public float Height;
-    public bool OuterGrid;
-    public bool InnerGrid;
+    public int XPos { get; private set; }
+    public int ZPos { get; private set; }
+    public float Height { get; private set; }
+    public bool OuterGrid { get; private set; }
+    public bool InnerGrid { get; private set; }
 
-    public GridTileInfo(string name, TileSetup tileSettings, float height, bool outerGrid, bool innerGrid)
+    public GridTileInfo(int xPos, int zPos, float height, bool outerGrid, bool innerGrid)
     {
-        Name = name;
-        TileSettings = tileSettings;
+        XPos = xPos;
+        ZPos = zPos;
+        Height = height;
+        OuterGrid = outerGrid;
+        InnerGrid = innerGrid;
+    }
+
+    public void UpdateTileInfo(float height, bool outerGrid, bool innerGrid)
+    {
         Height = height;
         OuterGrid = outerGrid;
         InnerGrid = innerGrid;
