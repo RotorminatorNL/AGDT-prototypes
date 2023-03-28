@@ -12,12 +12,15 @@ public class GridSystemV3_2_Inspector : Editor
 
         GridSystemV3_2 gridSystem = (GridSystemV3_2)target;
 
+
         gridSystem.TileTypeSettings = GetTileTypeSettingsList(gridSystem.TileTypeSettings, gridSystem.TileTypes);
 
         EditorGUILayout.Space(5);
-        if (GUILayout.Button("(Re)Generate grid")) gridSystem.ActivateGenerateGrid();
+        if (GUILayout.Button("Save Grid (Required after manual grid changes)")) gridSystem.SaveScene();
         EditorGUILayout.Space(2);
-        if (GUILayout.Button("Clear grid")) gridSystem.ClearGrid();
+        if (GUILayout.Button("(Re)Generate Grid")) gridSystem.ActivateGenerateGrid();
+        EditorGUILayout.Space(2);
+        if (GUILayout.Button("Clear Grid")) gridSystem.ClearGrid();
     }
 
     private List<TileTypeSettings> GetTileTypeSettingsList(List<TileTypeSettings> oldTileTypes, TileTypeCollection newTileTypes)

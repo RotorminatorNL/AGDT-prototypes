@@ -37,7 +37,11 @@ public class TileSetup : MonoBehaviour
         UpdateTile();
         previousTileTypeIndex = selectedTileTypeIndex;
         gridSystem.NavMeshRoad.BuildNavMesh();
-        EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
+    }
+
+    public bool TileTypeIndexChanged()
+    {
+        return previousTileTypeIndex != selectedTileTypeIndex;
     }
 
     public void SetTileType(string genSelectedTileType)

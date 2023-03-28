@@ -34,6 +34,12 @@ public class GridSystemV3_2 : MonoBehaviour
         InnerGridSettings.CalculateBorders(OuterGridSettings);
     }
 
+    public void SaveScene()
+    {
+        EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
+        Debug.Log("Saved");
+    }
+
     public void ActivateGenerateGrid()
     {
         if (!AbleToGenerate()) return;
@@ -53,7 +59,7 @@ public class GridSystemV3_2 : MonoBehaviour
         SetTypeOfTiles();
 
         NavMeshRoad.BuildNavMesh();
-        EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
+        SaveScene();
     }
 
     private bool AbleToGenerate()
