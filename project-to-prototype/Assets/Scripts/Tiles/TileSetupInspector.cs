@@ -24,7 +24,11 @@ public class TileSetupInspector : Editor
 
         if (targets.Length > 1 && tileSetupTarget.TileTypeIndexChanged())
         {
-            foreach (Object tileSetup in targets) tileSetup.GetComponent<TileSetup>().SelectedTileTypeIndex = tileSetupTarget.SelectedTileTypeIndex;
+            foreach (Object tileSetup in targets)
+            {
+                Debug.Log("sweg");
+                tileSetup.GetComponent<TileSetup>().SelectedTileTypeIndex = tileSetupTarget.SelectedTileTypeIndex;
+            }
         }
     }
 }
