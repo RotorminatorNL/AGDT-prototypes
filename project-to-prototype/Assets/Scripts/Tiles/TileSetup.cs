@@ -14,41 +14,29 @@ public class TileSetup : MonoBehaviour
     [SerializeField] private MeshCollider meshCollider;
     [SerializeField] private PlaceableTile placeableTile;
 
-    private GridSystemV3_2 gridSystem;
-
     public int SelectedTileTypeIndex { get { return selectedTileTypeIndex; } set { selectedTileTypeIndex = value; } }
     private int selectedTileTypeIndex;
-    private int previousTileTypeIndex;
 
     private void Start()
     {
-        gridSystem = GetComponentInParent<GridSystemV3_2>();
-        hasSpawned = true;
-
         TileInfo tileInfo = GetComponentInChildren<TileInfo>();
         if (tileInfo == null) return;
         selectedTileTypeIndex = TileTypes.Types.FindIndex(type => type.Name == tileInfo.TileType.Name);
-        previousTileTypeIndex = selectedTileTypeIndex;
     }
 
-    private void Update()
+    public bool TileTypeIndexChanged(int index)
     {
-        if (TileTypes == null || !hasSpawned || previousTileTypeIndex == selectedTileTypeIndex) return;
-        UpdateTile();
-        previousTileTypeIndex = selectedTileTypeIndex;
-        gridSystem.NavMeshRoad.BuildNavMesh();
-    }
-
-    public bool TileTypeIndexChanged()
-    {
-        return previousTileTypeIndex != selectedTileTypeIndex;
+        return selectedTileTypeIndex != index;
     }
 
     public void SetTileType(string genSelectedTileType)
     {
         selectedTileTypeIndex = TileTypes.Types.FindIndex(type => type.Name == genSelectedTileType);
-        previousTileTypeIndex = selectedTileTypeIndex;
-        hasSpawned = true;
+    }
+
+    public void SetTileType(int index)
+    {
+        selectedTileTypeIndex = index;
     }
 
     public void UpdateTile()

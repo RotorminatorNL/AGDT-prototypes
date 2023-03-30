@@ -10,6 +10,8 @@ using UnityEngine;
 [CanEditMultipleObjects]
 public class TileSetupInspector : Editor
 {
+    bool tileTypeIndexChanged = false;
+
     public override void OnInspectorGUI()
     {
         if (targets.Length == 1) DrawDefaultInspector();
@@ -20,15 +22,27 @@ public class TileSetupInspector : Editor
         if (tileTypes == null) return;
         tileSetupTarget.TileTypes = tileTypes;
         string[] tileTypeNames = tileSetupTarget.TileTypes.Types.Select(i => i.Name).ToArray();
-        tileSetupTarget.SelectedTileTypeIndex = EditorGUILayout.Popup("Hexagon tiles", tileSetupTarget.SelectedTileTypeIndex, tileTypeNames);
+        int selectedTileTypeIndex = EditorGUILayout.Popup("Tile types", tileSetupTarget.SelectedTileTypeIndex, tileTypeNames);
 
-        if (targets.Length > 1 && tileSetupTarget.TileTypeIndexChanged())
+        if (tileSetupTarget.TileTypeIndexChanged(selectedTileTypeIndex)) tileTypeIndexChanged = true;
+        if (tileTypeIndexChanged)
         {
-            foreach (Object tileSetup in targets)
+            if (targets.Length == 1)
             {
-                Debug.Log("sweg");
-                tileSetup.GetComponent<TileSetup>().SelectedTileTypeIndex = tileSetupTarget.SelectedTileTypeIndex;
+                tileSetupTarget.SetTileType(selectedTileTypeIndex);
+                tileSetupTarget.UpdateTile();
             }
+            if (targets.Length > 1)
+            {
+                foreach (Object gameObject in targets)
+                {
+                    Debug.Log("sweg");
+                    TileSetup tileSetup = (TileSetup)gameObject;
+                    tileSetup.SetTileType(selectedTileTypeIndex);
+                    tileSetup.UpdateTile();
+                }
+            }
+            tileTypeIndexChanged = false;
         }
     }
 }

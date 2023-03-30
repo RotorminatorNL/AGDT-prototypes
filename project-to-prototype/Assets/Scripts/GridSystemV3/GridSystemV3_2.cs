@@ -36,6 +36,7 @@ public class GridSystemV3_2 : MonoBehaviour
 
     public void SaveScene()
     {
+        NavMeshRoad.BuildNavMesh();
         EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
         Debug.Log("Saved");
     }
@@ -57,8 +58,6 @@ public class GridSystemV3_2 : MonoBehaviour
         else UpdateGeneratedTiles();
 
         SetTypeOfTiles();
-
-        NavMeshRoad.BuildNavMesh();
         SaveScene();
     }
 
@@ -152,33 +151,41 @@ public class GridSystemV3_2 : MonoBehaviour
         for (int i = 0; i < gridSystemDB.Tiles.Count; i++)
         {
             GridTileInfo tileInfo = gridSystemDB.Tiles[i];
-            TileSetup tileSetup = transform.GetChild(i).GetComponent<TileSetup>();
+            Transform tile = transform.GetChild(i);
+            TileSetup tileSetup = tile.GetComponent<TileSetup>();
 
+            TileTypeSettings settings = null;
             bool skipTile = false;
             for (int j = 0; j < TileTypeSettings.Count; j++)
             {
-                TileTypeSettings tileTypeSettings = TileTypeSettings[j];
-                if (tileSetup.SelectedTileTypeIndex == j && tileTypeSettings.SkipNextGen) skipTile = true;
+                if (tileSetup.SelectedTileTypeIndex == j && TileTypeSettings[j].SkipNextGen)
+                {
+                    settings = TileTypeSettings[j];
+                    skipTile = true;
+                }
             }
+
             if (!skipTile)
             {
-                string tileTypeName = GetTileTypeName(tileInfo.Height, tileInfo.OuterGrid, tileInfo.InnerGrid);
-                tileSetup.SetTileType(tileTypeName);
+                settings = GetTileTypeSettings(tileInfo.Height, tileInfo.OuterGrid, tileInfo.InnerGrid);
+                tileSetup.SetTileType(settings.Name);
                 tileSetup.UpdateTile();
             }
+
+            tile.localScale = new Vector3(tile.localScale.x, tile.localScale.y + settings.HeightOffset, tile.localScale.z);
         }
     }
     
-    private string GetTileTypeName(float currentHeight, bool outerGrid, bool innerGrid)
+    private TileTypeSettings GetTileTypeSettings(float currentHeight, bool outerGrid, bool innerGrid)
     {
-        string tileTypeName = "";
-        foreach (TileTypeSettings tileTypeSetting in TileTypeSettings)
+        TileTypeSettings returnSettings = null;
+        foreach (TileTypeSettings settings in TileTypeSettings)
         {
-            if (tileTypeName == "" && !tileTypeSetting.SkipNextGen && (outerGrid && tileTypeSetting.OuterGrid || innerGrid && tileTypeSetting.InnerGrid))
+            if (returnSettings == null && !settings.SkipNextGen && (outerGrid && settings.OuterGrid || innerGrid && settings.InnerGrid))
             {
-                tileTypeName = tileTypeSetting.IsHeightBelowMaxHeight(currentHeight, lowestHeight, highestHeight) ? tileTypeSetting.Name : tileTypeName;
+                returnSettings = settings.IsHeightBelowMaxHeight(currentHeight, lowestHeight, highestHeight) ? settings : returnSettings;
             }
         }
-        return tileTypeName;
+        return returnSettings;
     }
 }

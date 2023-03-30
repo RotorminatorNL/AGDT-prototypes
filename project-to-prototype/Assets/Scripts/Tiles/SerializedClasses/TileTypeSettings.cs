@@ -12,6 +12,7 @@ public class TileTypeSettings
     [Space(5)]
     public bool OuterGrid = true;
     public bool InnerGrid = true;
+    public float HeightOffset;
     [Range(0f, 1f)] public float MaxHeightPercent = 1f;
 
     public TileTypeSettings(string name)
