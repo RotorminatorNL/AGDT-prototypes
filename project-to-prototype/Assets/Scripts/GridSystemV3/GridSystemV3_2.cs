@@ -136,6 +136,7 @@ public class GridSystemV3_2 : MonoBehaviour
 
     private void InstantiateTile(int xPos, int zPos, float newHeight = 1)
     {
+        Debug.Log($"{xPos} | {xPos - InnerGridSettings.GridXStart}");
         float xActualPos = xPos + ((xPos - InnerGridSettings.GridXStart) * tileXSpaceCorrection);
         float zActualPos = zPos + ((zPos - InnerGridSettings.GridZStart) * tileZSpaceCorrection);
         if (zPos % 2 == 1) xActualPos += tileXOddOffset;

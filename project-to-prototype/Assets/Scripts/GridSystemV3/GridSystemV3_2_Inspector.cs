@@ -12,7 +12,6 @@ public class GridSystemV3_2_Inspector : Editor
 
         GridSystemV3_2 gridSystem = (GridSystemV3_2)target;
 
-
         gridSystem.TileTypeSettings = GetTileTypeSettingsList(gridSystem.TileTypeSettings, gridSystem.TileTypes);
 
         EditorGUILayout.Space(5);

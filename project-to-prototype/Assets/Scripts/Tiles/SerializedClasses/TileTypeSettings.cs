@@ -9,7 +9,6 @@ public class TileTypeSettings
 {
     public string Name;
     public bool SkipNextGen = false;
-    [Space(5)]
     public bool OuterGrid = true;
     public bool InnerGrid = true;
     public float HeightOffset;
