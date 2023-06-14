@@ -155,20 +155,20 @@ MonoBehaviour:
   editorData:
     _bezierPath:
       points:
-      - {x: -4.350084, y: 0, z: 0.36958665}
-      - {x: -1.5053577, y: 0, z: -2.0931952}
-      - {x: 1.3393683, y: 0, z: -4.555977}
-      - {x: 2.167694, y: 0, z: -3.293161}
-      - {x: 2.4950962, y: 0, z: -2.7940233}
-      - {x: 0.009846091, y: 0, z: -2.0706358}
-      - {x: -0.18645263, y: 0, z: -1.5069005}
-      - {x: -0.49002033, y: 0, z: -0.6351078}
-      - {x: 0.23049697, y: 0, z: 1.1420697}
-      - {x: 0.9510143, y: 0, z: 2.9192472}
+      - {x: 6.737821, y: 0, z: 0.73566395}
+      - {x: 5.0803905, y: 0, z: 0.92762697}
+      - {x: 3.42296, y: 0, z: 1.11959}
+      - {x: 3.3634167, y: 0, z: 1.8263447}
+      - {x: 3.3062592, y: 0, z: 2.5047781}
+      - {x: 6.420324, y: 0, z: 2.7207665}
+      - {x: 6.381772, y: 0, z: 3.400511}
+      - {x: 6.3292885, y: 0, z: 4.325904}
+      - {x: 4.192982, y: 0, z: 4.6955557}
+      - {x: 2.056676, y: 0, z: 5.065208}
       isClosed: 0
       space: 2
       controlMode: 3
-      autoControlLength: 0.202
+      autoControlLength: 0.2
       boundsUpToDate: 0
       bounds:
         m_Center: {x: 0.8919332, y: 0.52765876, z: -0.15140116}
@@ -190,7 +190,7 @@ MonoBehaviour:
     displayControlPoints: 1
     bezierHandleScale: 1
     globalDisplaySettingsFoldout: 0
-    keepConstantHandleSize: 0
+    keepConstantHandleSize: 1
     showNormalsInVertexMode: 0
     showBezierPathInVertexMode: 0
     showDisplayOptions: 1
@@ -216,55 +216,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &1266884696
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 4125965570099986, guid: 761d600d1e80341ac97f3228771ce637, type: 3}
-      propertyPath: m_RootOrder
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 4125965570099986, guid: 761d600d1e80341ac97f3228771ce637, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4125965570099986, guid: 761d600d1e80341ac97f3228771ce637, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4125965570099986, guid: 761d600d1e80341ac97f3228771ce637, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4125965570099986, guid: 761d600d1e80341ac97f3228771ce637, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4125965570099986, guid: 761d600d1e80341ac97f3228771ce637, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4125965570099986, guid: 761d600d1e80341ac97f3228771ce637, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4125965570099986, guid: 761d600d1e80341ac97f3228771ce637, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114548013775708692, guid: 761d600d1e80341ac97f3228771ce637, type: 3}
-      propertyPath: pathCreator
-      value: 
-      objectReference: {fileID: 184727958}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 761d600d1e80341ac97f3228771ce637, type: 3}
 --- !u!1 &1308570505
 GameObject:
   m_ObjectHideFlags: 0

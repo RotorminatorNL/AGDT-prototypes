@@ -764,16 +764,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a0193002587b44fa923d8985f84f6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  drawGizmo: 0
   gridLengthX: 30
   spaceCorrectionX: 1.5
+  offsetX: 0.5
   gridLengthZ: 20
   spaceCorrectionZ: 1.3
-  controlPoints:
-  - Coord: {x: 15, y: 0}
-  - Coord: {x: 3, y: 12}
-  - Coord: {x: 13, y: 18}
-  - Coord: {x: 12, y: 10}
-  - Coord: {x: 18, y: 5}
+  controlPointWeight: 0.2
+  anchorPoints:
+  - Coord: {x: 1, y: 1, z: 0}
+  - Coord: {x: 5, y: 13, z: 0}
+  - Coord: {x: 13, y: 5, z: 0}
 --- !u!4 &1154707139
 Transform:
   m_ObjectHideFlags: 0

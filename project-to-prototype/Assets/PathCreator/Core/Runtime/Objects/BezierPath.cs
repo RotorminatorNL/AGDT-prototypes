@@ -541,16 +541,21 @@ namespace PathCreation {
             Vector3 dir = Vector3.zero;
             float[] neighbourDistances = new float[2];
 
+            Debug.Log($"{anchorIndex} sweg");
+
             if (anchorIndex - 3 >= 0 || isClosed) {
                 Vector3 offset = points[LoopIndex (anchorIndex - 3)] - anchorPos;
                 dir += offset.normalized;
                 neighbourDistances[0] = offset.magnitude;
+                Debug.Log(LoopIndex(anchorIndex - 3));
             }
             if (anchorIndex + 3 >= 0 || isClosed) {
                 Vector3 offset = points[LoopIndex (anchorIndex + 3)] - anchorPos;
                 dir -= offset.normalized;
                 neighbourDistances[1] = -offset.magnitude;
+                Debug.Log(LoopIndex(anchorIndex + 3));
             }
+
 
             dir.Normalize ();
 
