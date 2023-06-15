@@ -5,8 +5,10 @@ using UnityEngine;
 [System.Serializable]
 public class BezierCurve
 {
-    public Vector3 CalculateQuadraticCurvePoint(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, float posOnCurve, float cpWeight = 3f)
+    public Vector3 CalculateQuadraticCurvePoint(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, float posOnCurve)
     {
+        float cpWeight = 3f;
+
         float posOnCurveReversed = 1f - posOnCurve;
         float posOnCurveReversedSqrd = posOnCurveReversed * posOnCurveReversed;
         float posOnCurveReversedCubed = posOnCurveReversedSqrd * posOnCurveReversed;
@@ -19,6 +21,6 @@ public class BezierCurve
         Vector3 ap2 = posOnCurveCubed * p3;
 
         Vector3 point = ap1 + cp1 + cp2 + ap2;
-        return new Vector3(Mathf.RoundToInt(point.x), Mathf.RoundToInt(point.y));
+        return new Vector3(point.x, 0, point.z);
     }
 }
